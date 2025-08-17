@@ -189,7 +189,7 @@
                 <option value="OKB">OKB (X Layer Mainnet Coin)</option>
                 <option value="Token">Token</option>
             </select>
-            <input type="text" id="tokenAddress" placeholder="Token Address (e.g., 0x...)" style="display: none;">
+            <input type="text" id="tokenAddress" placeholder="Token Contract Address (e.g., 0x...)" style="display: none;">
             <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0x123...abc,10000\n0x456...def,11000)"></textarea>
             <button id="sendBatch" class="button" disabled>Send Batch Transfer</button>
             <div id="multisendStatus" class="status"></div>
@@ -203,6 +203,7 @@
                 </thead>
                 <tbody id="transferPreview"></tbody>
             </table>
+            <button id="validateToken" class="button" style="margin-top: 10px;">Validate Token Address</button>
         </div>
         <div class="how-it-works">
             <h2>How It Works?</h2>
@@ -323,7 +324,7 @@
                     try {
                         const code = await web3.eth.getCode(tokenAddress).catch(err => {
                             console.error("getCode failed:", err);
-                            return '0x'; // Fallback to treat as non-contract
+                            return '0x'; // Fallback
                         });
                         if (code === '0x') {
                             status.textContent = "Error: Token address is not a contract";
@@ -333,7 +334,7 @@
                         const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
                         decimals = await tokenContract.methods.decimals().call().catch(err => {
                             console.error("decimals call failed:", err);
-                            return 18; // Fallback to 18 decimals
+                            return 18; // Fallback
                         });
                         symbol = 'Token';
                         logo = `https://ui-avatars.com/api/?name=T&background=00BFA5&color=121212&size=18`;
@@ -382,6 +383,7 @@
 
             const parsed = await parseTransferList();
             if (!parsed) {
+                status.textContent = status.textContent || "Error: Please fix the input or validate the token address.";
                 console.log("Parse failed, status:", status.textContent);
                 return;
             }
@@ -469,15 +471,46 @@
             }
         }
 
+        async function validateTokenAddress() {
+            const status = document.getElementById('multisendStatus');
+            const tokenAddress = document.getElementById('tokenAddress').value.trim();
+            if (!web3.utils.isAddress(tokenAddress)) {
+                status.textContent = "Error: Invalid address format (e.g., missing '0x' or wrong length)";
+                return;
+            }
+            try {
+                const code = await web3.eth.getCode(tokenAddress).catch(err => {
+                    console.error("getCode failed:", err);
+                    return '0x';
+                });
+                if (code === '0x') {
+                    status.textContent = "Error: Token address is not a contract";
+                    return;
+                }
+                const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+                const decimals = await tokenContract.methods.decimals().call().catch(err => {
+                    console.error("decimals call failed:", err);
+                    return 18;
+                });
+                status.textContent = `Token validated successfully! Decimals: ${decimals}`;
+                console.log("Token validated, decimals:", decimals);
+            } catch (error) {
+                status.textContent = `Error: Failed to validate token: ${error.message}`;
+                console.log("Validation error:", error);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const connectButton = document.getElementById('connectButton');
             const sendButton = document.getElementById('sendBatch');
-            if (connectButton && sendButton) {
+            const validateButton = document.getElementById('validateToken');
+            if (connectButton && sendButton && validateButton) {
                 connectButton.addEventListener('click', connectWallet);
                 sendButton.addEventListener('click', sendBatchTransfer);
+                validateButton.addEventListener('click', validateTokenAddress);
                 console.log("Event listeners attached at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
             } else {
-                console.error("Buttons not found in DOM:", { connectButton, sendButton });
+                console.error("Buttons not found in DOM:", { connectButton, sendButton, validateButton });
             }
             document.getElementById('transferList').addEventListener('input', parseTransferList);
             document.getElementById('tokenAddress').addEventListener('input', parseTransferList);
