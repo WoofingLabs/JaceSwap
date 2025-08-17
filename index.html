@@ -4,230 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JaceSwap - Swap</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-color: #ff9100;
+            --secondary-color: #ff6f61;
+            --gradient-bg: linear-gradient(180deg, #1e1e2f 0%, #2a2a3d 100%);
+            --card-bg: #2c2f48;
+            --input-bg: #373b5c;
+            --text-color: #ffffff;
+            --border-radius: 15px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            font-family: 'VT323', monospace;
-            background: #000;
-            color: #0f0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-color);
+            padding: 20px;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.2;
         }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 480px;
+            background: var(--card-bg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
             padding: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            position: relative;
         }
         .header {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            padding: 12px;
+            border-radius: var(--border-radius);
             text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
             margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: clamp(1.8em, 5vw, 2.2em);
-            text-transform: uppercase;
-            text-shadow: 0 0 10px #0f0;
-            animation: flicker 1.5s infinite alternate;
-        }
-        .connect-section {
-            margin-bottom: 20px;
-            text-align: center;
         }
         .connect-section button {
-            background: transparent;
-            color: #0f0;
-            padding: 10px 20px;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
+            padding: 12px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+            margin-bottom: 10px;
         }
-        .connect-section button:hover {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
-            transform: translateY(-2px);
-        }
-        .status {
-            font-size: 1em;
-            text-align: center;
-            margin: 10px 0;
-            text-shadow: 0 0 5px #0f0;
-        }
-        .wallet-info {
-            color: #0f0;
-            font-weight: 600;
-            word-break: break-all;
-        }
+        .connect-section button:hover { background: #e68a00; }
         .swap-box {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #0f0;
-            border-radius: 5px;
+            background: var(--input-bg);
             padding: 15px;
+            border-radius: var(--border-radius);
             margin-bottom: 15px;
+            position: relative;
         }
         .balance-row {
             display: flex;
             justify-content: space-between;
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #ff9100;
         }
         .token-search {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 10px;
             margin-bottom: 10px;
         }
         .token-search input {
             flex: 1;
             padding: 10px;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            background: #111;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
-            outline: none;
+            background: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1em;
+            margin-right: 10px;
         }
-        .token-search input::placeholder { color: #555; }
+        .token-search input::placeholder { color: #aaa; }
         .token-search button {
-            background: transparent;
-            color: #0f0;
-            padding: 10px 20px;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
+            padding: 10px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: bold;
+            transition: background 0.2s;
         }
-        .token-search button:hover {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
-        }
+        .token-search button:hover { background: #e68a00; }
         .token-info {
             display: flex;
             align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 10px;
             margin-bottom: 10px;
         }
         .token-info img {
             width: 24px;
             height: 24px;
             margin-right: 10px;
-            border-radius: 50%;
-            border: 1px solid #0f0;
         }
-        .token-info span { font-size: 1.2em; }
+        .token-info .placeholder {
+            width: 24px;
+            height: 24px;
+            background: #4a4f7a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .token-info span { font-size: 1em; }
         input.amount {
             width: 100%;
             padding: 10px;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            background: #111;
-            color: #0f0;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
+            background: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1em;
             text-align: right;
-            outline: none;
         }
         .percentage-buttons {
             display: flex;
-            gap: 10px;
+            gap: 5px;
             margin-top: 10px;
         }
         .percentage-buttons button {
-            background: transparent;
-            color: #0f0;
-            padding: 8px;
-            border: 2px solid #0f0;
+            padding: 5px 10px;
+            background: #4a4f7a;
+            border: none;
             border-radius: 5px;
-            font-family: 'VT323', monospace;
-            font-size: 1.1em;
             cursor: pointer;
+            color: var(--text-color);
             flex: 1;
-            transition: all 0.3s ease;
         }
-        .percentage-buttons button:hover {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
-        }
+        .percentage-buttons button:hover { background: #5a5f8a; }
         .switch-button {
             text-align: center;
             margin: 15px 0;
         }
         .switch-button button {
-            background: transparent;
-            color: #0f0;
             padding: 10px;
-            border: 2px solid #0f0;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .switch-button button:hover {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
+            transition: background 0.2s;
         }
         .swap-button {
-            width: 100%;
             padding: 15px;
-            background: transparent;
-            color: #0f0;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
         }
         .swap-button:disabled {
-            border-color: #555;
-            color: #555;
+            background: #4a4f7a;
             cursor: not-allowed;
         }
-        .swap-button:hover:not(:disabled) {
-            background: #0f0;
-            color: #000;
-            box-shadow: 0 0 15px #0f0;
+        .swap-button:hover:not(:disabled), .switch-button button:hover { background: #e68a00; }
+        .status {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            text-align: center;
         }
         .slippage-info, .swap-note {
-            font-size: 1em;
-            margin-top: 10px;
-            text-shadow: 0 0 5px #0f0;
+            font-size: 0.9em;
+            color: #ff9100;
+            margin-top: 5px;
+            text-align: left;
         }
         .spinner {
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid #0f0;
-            border-top: 2px solid #000;
+            border: 2px solid #fff;
+            border-top: 2px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-left: 5px;
@@ -244,49 +224,33 @@
             width: 60px;
             height: 60px;
             margin-bottom: 10px;
-            border-radius: 50%;
-            border: 1px solid #0f0;
         }
         .jace-message {
-            font-size: 1.1em;
-            text-shadow: 0 0 5px #0f0;
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            font-style: italic;
         }
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-        @media (max-width: 600px) {
+        @media (max-width: 480px) {
             body { padding: 10px; }
             .container { padding: 15px; }
-            .header h1 { font-size: 1.8em; }
-            .token-search { flex-direction: column; }
-            .token-search input, .token-search button { width: 100%; }
-            .percentage-buttons { flex-direction: column; }
+            .header { font-size: 1.1em; }
+            .percentage-buttons button { padding: 5px; }
             .jace-section img { width: 50px; height: 50px; }
-            .jace-message { font-size: 1em; }
+            .jace-message { font-size: 0.8em; }
         }
     </style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
     <div class="container">
-        <div class="header">
-            <h1>> JaceSwap</h1>
-        </div>
+        <div class="header">JaceSwap</div>
         <div class="connect-section">
-            <button id="connectWalletButton">> Connect Wallet</button>
-            <p>Wallet: <span id="walletAddress" class="wallet-info">Not connected</span></p>
-            <div id="networkStatus" class="status">> Click to connect...</div>
+            <button id="connectWalletButton">Connect Wallet</button>
+            <div id="networkStatus" class="status">Click to connect...</div>
         </div>
         <div class="swap-box">
             <div class="balance-row">
-                <span>> From</span>
-                <span id="fromBalance">> Balance: 0</span>
-            </div>
-            <div class="token-search">
-                <input type="text" id="fromTokenAddress" placeholder="Enter token address">
-                <button id="fromSearchButton">> Search</button>
+                <span>From</span>
+                <span id="fromBalance">Balance: 0</span>
             </div>
             <div class="token-info" id="fromTokenInfo">
                 <img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="OKB">
@@ -294,10 +258,10 @@
             </div>
             <input type="number" class="amount" id="fromAmount" placeholder="0.0" step="0.01" oninput="calculateOutput()">
             <div class="percentage-buttons">
-                <button onclick="setPercentage(25)">> 25%</button>
-                <button onclick="setPercentage(50)">> 50%</button>
-                <button onclick="setPercentage(75)">> 75%</button>
-                <button onclick="setPercentage(100)">> MAX</button>
+                <button onclick="setPercentage(25)">25%</button>
+                <button onclick="setPercentage(50)">50%</button>
+                <button onclick="setPercentage(75)">75%</button>
+                <button onclick="setPercentage(100)">MAX</button>
             </div>
         </div>
         <div class="switch-button">
@@ -305,28 +269,34 @@
         </div>
         <div class="swap-box">
             <div class="balance-row">
-                <span>> To</span>
-                <span id="toBalance">> Balance: 0</span>
+                <span>To</span>
+                <span id="toBalance">Balance: 0</span>
             </div>
-            <div class="token-search">
+            <div class="token-search" id="toToken">
                 <input type="text" id="toTokenAddress" placeholder="Enter token address">
-                <button id="toSearchButton">> Search</button>
+                <button id="toSearchButton">Search</button>
             </div>
             <div class="token-info" id="toTokenInfo">
+                <div class="placeholder">?</div>
                 <span>Select a token</span>
             </div>
-            <div class="slippage-info">> Default Slippage: 0.5%</div>
-            <div class="swap-note" id="swapNote">> Amount automatically calculated by JaceSwap</div>
+            <div class="slippage-info">Default Slippage: 0.5%</div>
+            <div class="swap-note" id="swapNote">Amount automatically calculated by JaceSwap</div>
         </div>
-        <button class="swap-button" id="swapButton" onclick="swapTokens()">> Swap</button>
+        <button class="swap-button" id="swapButton" onclick="swapTokens()">Swap</button>
         <div class="jace-section">
             <img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="Jace">
-            <div class="jace-message" id="jaceMessage">> Yo, connect your wallet to dive into JaceSwap, fam!</div>
+            <div class="jace-message" id="jaceMessage">Yo, connect your wallet to dive into JaceSwap, fam!</div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        const okbToken = { address: "0x4A4b3C83dC0e0E0fD8eE3c6F0E8E3c6F0E8E3c6F", symbol: "OKB", logo: "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png", isNative: true }; // Placeholder address
+        const okbToken = { 
+            address: "0x4A4b3C83dC0e0E0fD8eE3c6F0E8E3c6F0E8E3c6F", 
+            symbol: "OKB", 
+            logo: "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png", 
+            isNative: true 
+        };
         const routerAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"; // Replace with actual JaceRouter address
         const factoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"; // Replace with actual JaceSwapFactory address
         const wethAddress = "0x4A4b3C83dC0e0E0fD8eE3c6F0E8E3c6F0E8E3c6F"; // Replace with actual WOKB address
@@ -358,7 +328,7 @@
             rpcUrls: ['https://rpc.xlayer.tech'],
             blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
         };
-        let web3, accounts, router, factory;
+        let web3, account, router, factory;
         let fromToken = okbToken;
         let toToken = null;
         let fromBalance = '0';
@@ -394,87 +364,104 @@
             const messages = jaceMessages[type];
             if (typeof messages === 'function') {
                 const options = messages(param1, param2);
-                return `> ${options[Math.floor(Math.random() * options.length)]}`;
+                return options[Math.floor(Math.random() * options.length)];
             }
-            return `> ${messages[Math.floor(Math.random() * messages.length)]}`;
+            return messages[Math.floor(Math.random() * messages.length)];
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
-            document.getElementById('fromSearchButton').addEventListener('click', () => searchToken('from'));
             document.getElementById('toSearchButton').addEventListener('click', () => searchToken('to'));
             setupWalletListeners();
             if (!window.location.protocol.startsWith('http')) {
-                document.getElementById('networkStatus').innerText = '> Please run via a local server (e.g., "npx serve").';
+                document.getElementById('networkStatus').innerText = 'Please run via a local server (e.g., "npx serve").';
             } else if (!window.ethereum) {
-                document.getElementById('networkStatus').innerHTML = '> No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
+                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
             }
         });
 
         async function connectWallet() {
             const status = document.getElementById('networkStatus');
             const connectButton = document.getElementById('connectWalletButton');
-            const walletAddress = document.getElementById('walletAddress');
             const jaceMessage = document.getElementById('jaceMessage');
             try {
-                if (!window.ethereum) {
-                    status.innerHTML = '> No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
-                    jaceMessage.innerText = getRandomMessage('connectFail');
-                    throw new Error("No wallet detected");
-                }
+                if (!window.ethereum) throw new Error("No wallet detected. Please install MetaMask or another wallet.");
                 connectButton.disabled = true;
-                status.innerText = "> Connecting...";
+                status.innerText = "Connecting...";
                 jaceMessage.innerText = getRandomMessage('connectStart');
                 web3 = new Web3(window.ethereum);
-                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                if (!accounts.length) {
-                    throw new Error("Please unlock your wallet or connect it.");
-                }
-                const chainId = await web3.eth.getChainId();
-                if (chainId !== 196) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0xc4' }]
-                        });
-                    } catch (switchError) {
-                        if (switchError.code === 4902) {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [xLayer]
-                            });
-                        } else {
-                            throw switchError;
-                        }
-                    }
-                }
-                walletAddress.innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (!accounts.length) throw new Error("No accounts found. Please unlock your wallet.");
+                account = accounts[0];
+                await switchToXLayer();
                 router = new web3.eth.Contract(routerAbi, routerAddress);
                 factory = new web3.eth.Contract(factoryAbi, factoryAddress);
-                status.innerText = "> Connected to X Layer";
-                jaceMessage.innerText = getRandomMessage('connectSuccess');
+                updateUIAfterConnect();
                 await updateBalances();
             } catch (error) {
-                console.error(error);
-                status.innerText = "> Failed to connect: " + error.message;
+                status.innerText = "Failed: " + error.message;
                 jaceMessage.innerText = getRandomMessage('connectFail');
+                console.error(error);
                 resetUI();
             } finally {
                 connectButton.disabled = false;
             }
         }
 
+        async function switchToXLayer() {
+            const chainId = await web3.eth.getChainId();
+            if (Number(chainId) !== 196) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: "0xc4" }]
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [xLayer]
+                        });
+                    } else {
+                        throw switchError;
+                    }
+                }
+            }
+        }
+
+        function updateUIAfterConnect() {
+            const connectButton = document.getElementById('connectWalletButton');
+            const status = document.getElementById('networkStatus');
+            const jaceMessage = document.getElementById('jaceMessage');
+            connectButton.textContent = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
+            status.innerText = "Connected to X Layer";
+            jaceMessage.innerText = getRandomMessage('connectSuccess');
+        }
+
+        function resetUI() {
+            const connectButton = document.getElementById('connectWalletButton');
+            const status = document.getElementById('networkStatus');
+            connectButton.textContent = "Connect Wallet";
+            status.innerText = "Click to connect...";
+        }
+
         function setupWalletListeners() {
             if (!window.ethereum) return;
             window.ethereum.on('accountsChanged', async (newAccounts) => {
                 if (newAccounts.length) {
-                    accounts = newAccounts;
+                    account = newAccounts[0];
                     if (web3) {
+                        await switchToXLayer();
+                        router = new web3.eth.Contract(routerAbi, routerAddress);
+                        factory = new web3.eth.Contract(factoryAbi, factoryAddress);
+                        updateUIAfterConnect();
+                        await updateBalances();
+                    } else {
                         await connectWallet();
                     }
                 } else {
                     web3 = null;
-                    accounts = null;
+                    account = null;
                     router = null;
                     factory = null;
                     resetUI();
@@ -484,43 +471,37 @@
             window.ethereum.on('chainChanged', async (chainId) => {
                 if (parseInt(chainId, 16) !== 196) {
                     web3 = null;
-                    accounts = null;
+                    account = null;
                     router = null;
                     factory = null;
                     resetUI();
-                    document.getElementById('networkStatus').innerText = "> Wrong network. Reconnect to X Layer.";
-                    document.getElementById('jaceMessage').innerText = "> Jace says: Wrong chain, fam! Switch to X Layer!";
-                } else if (accounts) {
+                    document.getElementById('networkStatus').innerText = "Wrong network. Reconnect to X Layer.";
+                    document.getElementById('jaceMessage').innerText = "Jace says: Wrong chain, fam! Switch to X Layer!";
+                } else if (account) {
                     await connectWallet();
                 }
             });
         }
 
-        function resetUI() {
-            document.getElementById('connectWalletButton').textContent = "> Connect Wallet";
-            document.getElementById('walletAddress').textContent = "Not connected";
-            document.getElementById('networkStatus').textContent = "> Click to connect...";
-        }
-
         async function updateBalances() {
-            if (!web3 || !accounts) return;
+            if (!web3 || !account) return;
             if (fromToken.isNative) {
-                fromBalance = await web3.eth.getBalance(accounts[0]);
-                document.getElementById('fromBalance').innerText = `> Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+                fromBalance = await web3.eth.getBalance(account);
+                document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
             } else {
                 const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
-                fromBalance = await tokenContract.methods.balanceOf(accounts[0]).call();
-                document.getElementById('fromBalance').innerText = `> Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+                fromBalance = await tokenContract.methods.balanceOf(account).call();
+                document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
             }
             if (toToken) {
                 let toBalance;
                 if (toToken.isNative) {
-                    toBalance = await web3.eth.getBalance(accounts[0]);
+                    toBalance = await web3.eth.getBalance(account);
                 } else {
                     const toTokenContract = new web3.eth.Contract(erc20Abi, toToken.address);
-                    toBalance = await toTokenContract.methods.balanceOf(accounts[0]).call();
+                    toBalance = await toTokenContract.methods.balanceOf(account).call();
                 }
-                document.getElementById('toBalance').innerText = `> Balance: ${web3.utils.fromWei(toBalance, 'ether')}`;
+                document.getElementById('toBalance').innerText = `Balance: ${web3.utils.fromWei(toBalance, 'ether')}`;
             }
         }
 
@@ -530,11 +511,11 @@
             const tokenAddressInput = document.getElementById(`${type}TokenAddress`);
             const tokenAddress = tokenAddressInput.value.trim();
             if (!web3.utils.isAddress(tokenAddress)) {
-                status.innerText = "> Invalid address!";
+                status.innerText = "Invalid address!";
                 jaceMessage.innerText = getRandomMessage('invalidToken');
                 return;
             }
-            status.innerText = "> Searching token...";
+            status.innerText = "Searching token...";
             jaceMessage.innerText = getRandomMessage('tokenSearch');
             try {
                 const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
@@ -545,12 +526,13 @@
                 } catch (error) {
                     throw new Error("Failed to fetch token: " + error.message);
                 }
-                const token = { address: tokenAddress, symbol, logo: "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png", isNative: tokenAddress === wethAddress };
-                if (type === 'from') {
-                    fromToken = token;
-                    document.getElementById('fromTokenInfo').innerHTML = `<img src="${token.logo}" alt="${symbol}"><span id="fromTokenSymbol">${symbol}</span>`;
-                    isFromOKB = token.isNative;
-                } else {
+                const token = { 
+                    address: tokenAddress, 
+                    symbol, 
+                    logo: "images/placeholder.png", // Placeholder for non-OKB tokens
+                    isNative: tokenAddress === wethAddress 
+                };
+                if (type === 'to') {
                     toToken = token;
                     document.getElementById('toTokenInfo').innerHTML = `<img src="${token.logo}" alt="${symbol}"><span>${symbol}</span>`;
                     if (isFromOKB) {
@@ -567,7 +549,7 @@
                 await updateBalances();
                 calculateOutput();
             } catch (error) {
-                status.innerText = "> Error: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
+                status.innerText = "Error: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
                 jaceMessage.innerText = getRandomMessage('invalidToken');
             }
         }
@@ -576,7 +558,7 @@
             const jaceMessage = document.getElementById('jaceMessage');
             const status = document.getElementById('networkStatus');
             if (!toToken) {
-                status.innerText = "> Please select a token to swap to.";
+                status.innerText = "Please select a token to swap to.";
                 jaceMessage.innerText = getRandomMessage('swapNoToken');
                 return;
             }
@@ -593,7 +575,7 @@
             const jaceMessage = document.getElementById('jaceMessage');
             const status = document.getElementById('networkStatus');
             if (!fromBalance || !web3) {
-                status.innerText = "> Please connect wallet first.";
+                status.innerText = "Please connect wallet first.";
                 jaceMessage.innerText = getRandomMessage('connectFail');
                 return;
             }
@@ -615,35 +597,35 @@
             const amountIn = document.getElementById('fromAmount').value;
             const swapNote = document.getElementById('swapNote');
             const jaceMessage = document.getElementById('jaceMessage');
-            if (!web3 || !accounts || !toToken || !amountIn || amountIn <= 0) {
-                swapNote.innerHTML = '> Amount automatically calculated by JaceSwap';
+            if (!web3 || !account || !toToken || !amountIn || amountIn <= 0) {
+                swapNote.innerHTML = 'Amount automatically calculated by JaceSwap';
                 return;
             }
             let amountInWei;
             try {
                 amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
             } catch (error) {
-                swapNote.innerHTML = '> Invalid amount entered.';
+                swapNote.innerHTML = 'Invalid amount entered.';
                 jaceMessage.innerText = getRandomMessage('swapNoAmount');
                 return;
             }
-            swapNote.innerHTML = '> Estimated output: <span class="spinner"></span>';
+            swapNote.innerHTML = `Estimated output: <span class="spinner"></span>`;
             jaceMessage.innerText = getRandomMessage('calcStart');
             try {
                 const path = [fromToken.address, toToken.address];
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
-                    swapNote.innerHTML = '> No valid trading pair found.';
+                    swapNote.innerHTML = 'No valid trading pair found.';
                     jaceMessage.innerText = getRandomMessage('calcFail');
                     return;
                 }
                 const outputEther = parseFloat(web3.utils.fromWei(output, 'ether'));
-                swapNote.innerHTML = `> Estimated output: ${outputEther.toFixed(6)} ${toToken.symbol}`;
+                swapNote.innerHTML = `Estimated output: ${outputEther.toFixed(6)} ${toToken.symbol}`;
                 jaceMessage.innerText = getRandomMessage('calcSuccess', outputEther.toFixed(2), toToken.symbol);
             } catch (error) {
                 console.error("Error calculating output:", error);
-                swapNote.innerHTML = '> Error calculating output.';
+                swapNote.innerHTML = 'Error calculating output.';
                 jaceMessage.innerText = getRandomMessage('calcFail');
             }
         }
@@ -651,20 +633,20 @@
         async function approveToken(tokenAddress, amount) {
             if (tokenAddress === wethAddress && fromToken.isNative) return;
             const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
-            const allowance = await tokenContract.methods.allowance(accounts[0], routerAddress).call();
+            const allowance = await tokenContract.methods.allowance(account, routerAddress).call();
             if (web3.utils.toBN(allowance).lt(web3.utils.toBN(amount))) {
                 const swapButton = document.getElementById('swapButton');
                 const jaceMessage = document.getElementById('jaceMessage');
                 isApproving = true;
-                swapButton.textContent = "> Authorizing...";
+                swapButton.textContent = "Authorizing...";
                 swapButton.disabled = true;
                 jaceMessage.innerText = getRandomMessage('approving');
-                await tokenContract.methods.approve(routerAddress, amount).send({ from: accounts[0] });
-                document.getElementById('networkStatus').innerText = "> Token approved";
+                await tokenContract.methods.approve(routerAddress, amount).send({ from: account });
+                document.getElementById('networkStatus').innerText = "Token approved";
                 isApproving = false;
-                swapButton.textContent = "> Swap";
+                swapButton.textContent = "Swap";
                 swapButton.disabled = false;
-                jaceMessage.innerText = "> Jace says: Tokens approved, ready to swap!";
+                jaceMessage.innerText = "Jace says: Tokens approved, ready to swap!";
             }
         }
 
@@ -673,14 +655,14 @@
             const status = document.getElementById('networkStatus');
             const swapButton = document.getElementById('swapButton');
             if (isApproving) return;
-            if (!web3 || !accounts || !toToken) {
-                status.innerText = "> Please connect wallet and select tokens.";
+            if (!web3 || !account || !toToken) {
+                status.innerText = "Please connect wallet and select tokens.";
                 jaceMessage.innerText = getRandomMessage('swapNoToken');
                 return;
             }
             const amountIn = document.getElementById('fromAmount').value;
             if (!amountIn || amountIn <= 0) {
-                status.innerText = "> Please enter a valid amount.";
+                status.innerText = "Please enter a valid amount.";
                 jaceMessage.innerText = getRandomMessage('swapNoAmount');
                 return;
             }
@@ -688,17 +670,17 @@
             try {
                 amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
             } catch (error) {
-                status.innerText = "> Invalid amount entered.";
+                status.innerText = "Invalid amount entered.";
                 jaceMessage.innerText = getRandomMessage('swapNoAmount');
                 console.error("Amount conversion error:", error);
                 return;
             }
             if (!fromToken.isNative) {
                 const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
-                const tokenBalance = await tokenContract.methods.balanceOf(accounts[0]).call();
+                const tokenBalance = await tokenContract.methods.balanceOf(account).call();
                 if (web3.utils.toBN(tokenBalance).lt(amountInWei)) {
-                    status.innerText = "> Insufficient token balance.";
-                    jaceMessage.innerText = "> Jace says: Not enough tokens to swap, fam!";
+                    status.innerText = "Insufficient token balance.";
+                    jaceMessage.innerText = "Jace says: Not enough tokens to swap, fam!";
                     return;
                 }
             }
@@ -708,7 +690,7 @@
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
-                    status.innerText = "> No valid trading pair found.";
+                    status.innerText = "No valid trading pair found.";
                     jaceMessage.innerText = getRandomMessage('calcFail');
                     return;
                 }
@@ -722,19 +704,19 @@
                 const reserveToBN = web3.utils.toBN(reserveTo);
                 const priceImpact = amountInWei.mul(web3.utils.toBN(100)).div(reserveFromBN.add(amountInWei));
                 if (priceImpact.gt(web3.utils.toBN(maxPriceImpact * 100))) {
-                    status.innerText = `> Price impact too high (${priceImpact.toString()}%).`;
+                    status.innerText = `Price impact too high (${priceImpact.toString()}%).`;
                     jaceMessage.innerText = getRandomMessage('highPriceImpact');
                     return;
                 }
                 if (output.gt(reserveToBN)) {
-                    status.innerText = `> Insufficient liquidity in pool.`;
+                    status.innerText = `Insufficient liquidity in pool.`;
                     jaceMessage.innerText = getRandomMessage('insufficientLiquidity');
                     return;
                 }
                 const slippageFactor = web3.utils.toBN(1000 - defaultSlippage * 1000);
                 const amountOutMin = output.mul(slippageFactor).div(web3.utils.toBN(1000));
                 swapButton.disabled = true;
-                status.innerText = "> Processing swap...";
+                status.innerText = "Processing swap...";
                 jaceMessage.innerText = getRandomMessage('swapStart');
                 if (!fromToken.isNative) {
                     await approveToken(fromToken.address, amountInWei);
@@ -745,19 +727,19 @@
                     await router.methods.swapExactETHForTokens(
                         amountOutMin.toString(),
                         path,
-                        accounts[0],
+                        account,
                         deadline
-                    ).send({ from: accounts[0], value: amountInWei, gasPrice: adjustedGasPrice });
+                    ).send({ from: account, value: amountInWei, gasPrice: adjustedGasPrice });
                 } else {
                     await router.methods.swapExactTokensForETH(
                         amountInWei.toString(),
                         amountOutMin.toString(),
                         path,
-                        accounts[0],
+                        account,
                         deadline
-                    ).send({ from: accounts[0], gasPrice: adjustedGasPrice });
+                    ).send({ from: account, gasPrice: adjustedGasPrice });
                 }
-                status.innerText = "> Swap successful!";
+                status.innerText = "Swap successful!";
                 jaceMessage.innerText = getRandomMessage('swapSuccess');
                 document.getElementById('fromAmount').value = '';
                 await updateBalances();
@@ -765,13 +747,13 @@
                 console.error("Swap failed:", error);
                 let errorMessage = error.message || "Unknown error";
                 if (error.message.includes("User denied transaction signature")) {
-                    errorMessage = "> User denied transaction signature.";
+                    errorMessage = "User denied transaction signature.";
                     jaceMessage.innerText = getRandomMessage('userDenied');
                 } else if (error.message.includes("INSUFFICIENT_OUTPUT_AMOUNT") || error.message.includes("EXCESSIVE_INPUT_AMOUNT")) {
-                    errorMessage = "> Swap failed: Price impact or slippage too high.";
-                    jaceMessage.innerText = "> Jace says: Swap failed—too much price impact or slippage.";
+                    errorMessage = "Swap failed: Price impact or slippage too high.";
+                    jaceMessage.innerText = "Jace says: Swap failed—too much price impact or slippage.";
                 } else if (error.message.includes("INSUFFICIENT_LIQUIDITY")) {
-                    errorMessage = "> Swap failed: Insufficient liquidity in the pool.";
+                    errorMessage = "Swap failed: Insufficient liquidity in the pool.";
                     jaceMessage.innerText = getRandomMessage('insufficientLiquidity');
                 } else {
                     jaceMessage.innerText = getRandomMessage('swapFail');
@@ -781,30 +763,6 @@
                 swapButton.disabled = false;
             }
         }
-
-        // Matrix background
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        for (let x = 0; x < columns; x++) drops[x] = 1;
-        function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#0F0';
-            ctx.font = fontSize + 'px VT323';
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(draw, 33);
     </script>
 </body>
 </html>
