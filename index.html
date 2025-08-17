@@ -191,7 +191,7 @@
             </select>
             <input type="text" id="tokenAddress" placeholder="Token Address (e.g., 0x...)" style="display: none;">
             <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0x123...abc,10000\n0x456...def,11000)"></textarea>
-            <button id="sendBatch" class="button">Send Batch Transfer</button>
+            <button id="sendBatch" class="button" disabled>Send Batch Transfer</button>
             <div id="multisendStatus" class="status"></div>
             <table class="token-table">
                 <thead>
@@ -276,8 +276,8 @@
                 document.getElementById('walletAddress').textContent = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 multisendContract = new web3.eth.Contract(multisendABI, multisendAddress);
                 status.textContent = "Connected to X Layer";
-                sendButton.disabled = false;
-                console.log("Wallet connected:", accounts[0]);
+                sendButton.disabled = false; // Enable button on successful connection
+                console.log("Wallet connected at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
             } catch (error) {
                 console.error("Connect error:", error);
                 status.textContent = `Error: ${error.message}`;
@@ -361,19 +361,23 @@
             const section = document.getElementById('multisendSection');
             const status = document.getElementById('multisendStatus');
             const sendButton = document.getElementById('sendBatch');
+            console.log("Send button clicked at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
 
             if (!web3 || !accounts) {
-                status.textContent = "Error: Connect wallet first";
+                status.textContent = "Error: Wallet not connected. Please connect first.";
+                console.log("No web3 or accounts:", { web3, accounts });
                 return;
             }
 
             const parsed = await parseTransferList();
             if (!parsed) {
+                console.log("Parse failed, status:", status.textContent);
                 return;
             }
             const { transfers, totalAmount, decimals } = parsed;
             if (transfers.length === 0) {
                 status.textContent = "Error: No transfers provided";
+                console.log("No transfers provided");
                 return;
             }
 
@@ -381,33 +385,44 @@
                 section.classList.add('loading');
                 sendButton.disabled = true;
                 status.textContent = "Estimating gas...";
+                console.log("Starting transaction with", transfers.length, "transfers");
 
                 const gasPrice = await web3.eth.getGasPrice();
-                const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(12)).div(web3.utils.toBN(10)); // Reduced multiplier for X Layer
+                const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(12)).div(web3.utils.toBN(10));
                 const transferType = document.getElementById('transferType').value;
                 const targets = transfers.map(t => t.address);
                 const amounts = transfers.map(t => t.amount);
-                let gasLimit = 200000 + (transfers.length * 60000); // Increased for safety
+                let gasLimit = 200000 + (transfers.length * 60000);
 
                 if (transferType === 'Token') {
                     const tokenAddress = document.getElementById('tokenAddress').value.trim();
                     const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
                     status.textContent = "Checking token allowance...";
+                    console.log("Checking allowance for", tokenAddress);
                     const allowance = await tokenContract.methods.allowance(accounts[0], multisendAddress).call();
                     if (web3.utils.toBN(allowance).lt(totalAmount)) {
                         status.textContent = "Approving tokens...";
-                        const approveGas = await tokenContract.methods.approve(multisendAddress, MAX_UINT256).estimateGas({ from: accounts[0] });
+                        console.log("Approving tokens, required:", totalAmount.toString(), "current:", allowance.toString());
+                        const approveGas = await tokenContract.methods.approve(multisendAddress, MAX_UINT256).estimateGas({ from: accounts[0] }).catch(err => {
+                            console.error("Gas estimation failed:", err);
+                            return 100000; // Fallback gas
+                        });
                         await tokenContract.methods.approve(multisendAddress, MAX_UINT256).send({
                             from: accounts[0],
                             gas: Math.ceil(approveGas * 1.2),
                             gasPrice: adjustedGasPrice
                         });
                         status.textContent = "Approval done, sending...";
+                        console.log("Approval completed");
                     }
                     status.textContent = "Estimating token transfer gas...";
-                    gasLimit = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).estimateGas({ from: accounts[0] }).catch(() => gasLimit);
-                    gasLimit = Math.ceil(gasLimit * 1.3); // 30% buffer
+                    gasLimit = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).estimateGas({ from: accounts[0] }).catch(err => {
+                        console.error("Gas estimation failed:", err);
+                        return gasLimit;
+                    });
+                    gasLimit = Math.ceil(gasLimit * 1.3);
                     status.textContent = "Sending token batch...";
+                    console.log("Sending token batch with gasLimit:", gasLimit);
                     await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({
                         from: accounts[0],
                         gas: gasLimit,
@@ -415,9 +430,13 @@
                     });
                 } else {
                     status.textContent = "Estimating OKB transfer gas...";
-                    gasLimit = await multisendContract.methods.multisendEth(targets, amounts).estimateGas({ from: accounts[0], value: totalAmount }).catch(() => gasLimit);
-                    gasLimit = Math.ceil(gasLimit * 1.3); // 30% buffer
+                    gasLimit = await multisendContract.methods.multisendEth(targets, amounts).estimateGas({ from: accounts[0], value: totalAmount }).catch(err => {
+                        console.error("Gas estimation failed:", err);
+                        return gasLimit;
+                    });
+                    gasLimit = Math.ceil(gasLimit * 1.3);
                     status.textContent = "Sending OKB batch...";
+                    console.log("Sending OKB batch with gasLimit:", gasLimit, "value:", totalAmount.toString());
                     await multisendContract.methods.multisendEth(targets, amounts).send({
                         from: accounts[0],
                         value: totalAmount,
@@ -426,6 +445,7 @@
                     });
                 }
                 status.textContent = "Batch transfer successful!";
+                console.log("Transaction successful");
                 document.getElementById('transferList').value = '';
                 document.getElementById('transferPreview').innerHTML = '';
             } catch (error) {
@@ -434,16 +454,27 @@
             } finally {
                 section.classList.remove('loading');
                 sendButton.disabled = false;
+                console.log("Button re-enabled");
             }
         }
 
-        document.getElementById('connectButton').addEventListener('click', connectWallet);
-        document.getElementById('sendBatch').addEventListener('click', sendBatchTransfer);
-        document.getElementById('transferList').addEventListener('input', parseTransferList);
-        document.getElementById('tokenAddress').addEventListener('input', parseTransferList);
+        // Ensure event listeners are attached after DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const connectButton = document.getElementById('connectButton');
+            const sendButton = document.getElementById('sendBatch');
+            if (connectButton && sendButton) {
+                connectButton.addEventListener('click', connectWallet);
+                sendButton.addEventListener('click', sendBatchTransfer);
+                console.log("Event listeners attached at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
+            } else {
+                console.error("Buttons not found in DOM:", { connectButton, sendButton });
+            }
+            document.getElementById('transferList').addEventListener('input', parseTransferList);
+            document.getElementById('tokenAddress').addEventListener('input', parseTransferList);
+            document.getElementById('sendBatch').disabled = true; // Ensure initial state
+        });
 
         window.addEventListener('load', () => {
-            document.getElementById('sendBatch').disabled = true;
             if (!window.location.protocol.startsWith('http')) {
                 document.getElementById('networkStatus').textContent = 'Run via local server (e.g., npx serve)';
             } else if (!window.ethereum) {
