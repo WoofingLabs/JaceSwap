@@ -114,12 +114,7 @@
             border-radius: 10px;
             margin-bottom: 10px;
         }
-        .token-info img {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-        }
-        .token-info .placeholder {
+        .token-info .avatar {
             width: 24px;
             height: 24px;
             background: #4a4f7a;
@@ -128,6 +123,8 @@
             align-items: center;
             justify-content: center;
             margin-right: 10px;
+            font-size: 0.9em;
+            color: #ff9100;
         }
         .token-info span { font-size: 1em; }
         input.amount {
@@ -220,10 +217,17 @@
             text-align: center;
             margin-top: 20px;
         }
-        .jace-section img {
+        .jace-section .avatar {
             width: 60px;
             height: 60px;
-            margin-bottom: 10px;
+            background: #4a4f7a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.5em;
+            color: #ff9100;
         }
         .jace-message {
             font-size: 0.9em;
@@ -235,7 +239,7 @@
             .container { padding: 15px; }
             .header { font-size: 1.1em; }
             .percentage-buttons button { padding: 5px; }
-            .jace-section img { width: 50px; height: 50px; }
+            .jace-section .avatar { width: 50px; height: 50px; font-size: 1.2em; }
             .jace-message { font-size: 0.8em; }
         }
     </style>
@@ -253,7 +257,7 @@
                 <span id="fromBalance">Balance: 0</span>
             </div>
             <div class="token-info" id="fromTokenInfo">
-                <img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="OKB">
+                <div class="avatar">🟠</div>
                 <span id="fromTokenSymbol">OKB</span>
             </div>
             <input type="number" class="amount" id="fromAmount" placeholder="0.0" step="0.01" oninput="calculateOutput()">
@@ -277,7 +281,7 @@
                 <button id="toSearchButton">Search</button>
             </div>
             <div class="token-info" id="toTokenInfo">
-                <div class="placeholder">?</div>
+                <div class="avatar">?</div>
                 <span>Select a token</span>
             </div>
             <div class="slippage-info">Default Slippage: 0.5%</div>
@@ -285,21 +289,21 @@
         </div>
         <button class="swap-button" id="swapButton" onclick="swapTokens()">Swap</button>
         <div class="jace-section">
-            <img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="Jace">
+            <div class="avatar">🟠</div>
             <div class="jace-message" id="jaceMessage">Yo, connect your wallet to dive into JaceSwap, fam!</div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         const okbToken = { 
-            address: "0x4A4b3C83dC0e0E0fD8eE3c6F0E8E3c6F0E8E3c6F", 
+            address: "0x4a4b3c83dc0e0e0fd8ee3c6f0e8e3c6f0e8e3c6f", // Corrected checksum
             symbol: "OKB", 
-            logo: "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png", 
+            avatar: "🟠", // Emoji for OKB
             isNative: true 
         };
-        const routerAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"; // Replace with actual JaceRouter address
-        const factoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"; // Replace with actual JaceSwapFactory address
-        const wethAddress = "0x4A4b3C83dC0e0E0fD8eE3c6F0E8E3c6F0E8E3c6F"; // Replace with actual WOKB address
+        const routerAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"; // Replace with actual JaceRouter address
+        const factoryAddress = "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f"; // Replace with actual JaceSwapFactory address
+        const wethAddress = "0x4a4b3c83dc0e0e0fd8ee3c6f0e8e3c6f0e8e3c6f"; // Replace with actual WOKB address
         const routerAbi = [
             {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},
@@ -338,26 +342,26 @@
         const maxPriceImpact = 0.5;
 
         const jaceMessages = {
-            connectStart: ["> Yo, Jace is syncing your wallet, hang tight!", "> Jace is plugging into X Layer, gimme a sec!", "> Hold up, Jace is linking your wallet, fam!", "> Jace is locking in your wallet, stay sharp!"],
-            connectSuccess: ["> Jace got you connected, let’s swap some tokens!", "> Yo, you’re in with Jace! Time to make moves!", "> Jace linked up, ready to trade like a pro!", "> Connected! Jace is set to dominate the swap game!"],
-            connectFail: ["> Uh-oh, Jace couldn’t link the wallet, try again!", "> Wallet’s playing hide and seek, Jace says retry!", "> Jace hit a snag, reconnect that wallet, fam!", "> Nope, wallet’s offline, Jace needs another shot!"],
-            tokenSearch: ["> Jace is scanning for that token, hold on!", "> Searching the blockchain, Jace’s got this!", "> Jace is digging for your token, one sec!", "> Token hunt is on, Jace is tracking it down!"],
-            selectToken: (symbol) => [`> Jace approves of ${symbol}, solid pick!`, `> ${symbol}? Jace likes your style, let’s trade!`, `> Yo, ${symbol} is the vibe, Jace is ready!`, `> ${symbol} locked in, Jace says it’s go time!`],
-            switchTokens: ["> Jace is flipping the tokens, smooth move!", "> Swapping sides? Jace’s got the switch covered!", "> Jace says flip it, let’s change the game!", "> Token switch? Jace is all over it, fam!"],
-            setPercentage: (percent) => [`> Jace is betting ${percent}%, bold move!`, `> ${percent}%? Jace respects the hustle!`, `> Jace is rolling with ${percent}%, let’s do this!`, `> ${percent}% locked in, Jace is hyped!`],
-            calcStart: ["> Jace is crunching the numbers, hold tight!", "> Calculating the swap, Jace is on it!", "> Jace is working the math, give it a sec!", "> Price check in progress, Jace is computing!"],
-            calcSuccess: (amount, symbol) => [`> Jace scored ${amount} ${symbol}, ready to swap?`, `> Boom, Jace got you ${amount} ${symbol}!`, `> Jace nailed it: ${amount} ${symbol}, let’s trade!`, `> ${amount} ${symbol} locked in, Jace is pumped!`],
-            calcFail: ["> Jace couldn’t find a path, try another pair!", "> Swap route’s a bust, Jace says pick again!", "> No deal here, Jace needs a new token pair!", "> Jace hit a wall, retry with different tokens!"],
-            swapStart: ["> Jace is executing the swap, let’s roll!", "> Swap’s on, Jace is making it happen!", "> Jace is diving into the trade, hold up!", "> Trading time, Jace is running the show!"],
-            swapSuccess: ["> Jace nailed the swap, you’re a legend!", "> Swap complete, Jace says you’re killing it!", "> Jace pulled it off, trade’s a success!", "> Done deal, Jace made it happen, fam!"],
-            swapFail: ["> Swap didn’t go through, Jace says try again!", "> Jace hit a glitch, let’s retry the trade!", "> Trade failed, Jace needs another shot!", "> Something broke, Jace says give it one more go!"],
-            swapNoToken: ["> Jace needs a token to swap, pick one!", "> No token? Jace can’t swap air, fam!", "> Yo, Jace says select a token first!", "> Jace is waiting, choose a token to trade!"],
-            swapNoAmount: ["> Jace needs an amount, enter something!", "> No amount? Jace can’t work with zero!", "> Yo, give Jace a number to swap, fam!", "> Jace says fill in the amount, let’s go!"],
-            highPriceImpact: ["> Jace warns: price impact’s too high, scale it down!", "> Too much impact, Jace says try a smaller amount!", "> Swap’s too big, Jace suggests lowering it!", "> Price impact’s wild, Jace says reduce it!"],
-            insufficientLiquidity: ["> Jace says the pool’s too dry for this swap!", "> Not enough liquidity, Jace needs a smaller trade!", "> Pool’s empty, Jace says try less!", "> Jace can’t swim here, too little liquidity!"],
-            approving: ["> Jace is approving your tokens, one sec!", "> Token approval in progress, Jace’s on it!", "> Jace is setting up the trade, hold tight!", "> Authorizing tokens, Jace is locking it in!"],
-            userDenied: ["> Yo, you bailed on Jace! Approve next time!", "> Jace was ready, but you said no, retry!", "> Denied the trade? Jace says try again!", "> Jace got rejected, let’s do this again!"],
-            invalidToken: ["> Jace says that token’s no good, try another!", "> Invalid address, Jace needs a real token!", "> Jace can’t find that token, check the address!", "> Bad token, Jace says enter a valid one!"]
+            connectStart: ["Yo, Jace is syncing your wallet, hang tight!", "Jace is plugging into X Layer, gimme a sec!", "Hold up, Jace is linking your wallet, fam!", "Jace is locking in your wallet, stay sharp!"],
+            connectSuccess: ["Jace got you connected, let’s swap some tokens!", "Yo, you’re in with Jace! Time to make moves!", "Jace linked up, ready to trade like a pro!", "Connected! Jace is set to dominate the swap game!"],
+            connectFail: ["Uh-oh, Jace couldn’t link the wallet, try again!", "Wallet’s playing hide and seek, Jace says retry!", "Jace hit a snag, reconnect that wallet, fam!", "Nope, wallet’s offline, Jace needs another shot!"],
+            tokenSearch: ["Jace is scanning for that token, hold on!", "Searching the blockchain, Jace’s got this!", "Jace is digging for your token, one sec!", "Token hunt is on, Jace is tracking it down!"],
+            selectToken: (symbol) => [`Jace approves of ${symbol}, solid pick!`, `${symbol}? Jace likes your style, let’s trade!`, `Yo, ${symbol} is the vibe, Jace is ready!`, `${symbol} locked in, Jace says it’s go time!`],
+            switchTokens: ["Jace is flipping the tokens, smooth move!", "Swapping sides? Jace’s got the switch covered!", "Jace says flip it, let’s change the game!", "Token switch? Jace is all over it, fam!"],
+            setPercentage: (percent) => [`Jace is betting ${percent}%, bold move!`, `${percent}%? Jace respects the hustle!`, `Jace is rolling with ${percent}%, let’s do this!`, `${percent}% locked in, Jace is hyped!`],
+            calcStart: ["Jace is crunching the numbers, hold tight!", "Calculating the swap, Jace is on it!", "Jace is working the math, give it a sec!", "Price check in progress, Jace is computing!"],
+            calcSuccess: (amount, symbol) => [`Jace scored ${amount} ${symbol}, ready to swap?`, `Boom, Jace got you ${amount} ${symbol}!`, `Jace nailed it: ${amount} ${symbol}, let’s trade!`, `${amount} ${symbol} locked in, Jace is pumped!`],
+            calcFail: ["Jace couldn’t find a path, try another pair!", "Swap route’s a bust, Jace says pick again!", "No deal here, Jace needs a new token pair!", "Jace hit a wall, retry with different tokens!"],
+            swapStart: ["Jace is executing the swap, let’s roll!", "Swap’s on, Jace is making it happen!", "Jace is diving into the trade, hold up!", "Trading time, Jace is running the show!"],
+            swapSuccess: ["Jace nailed the swap, you’re a legend!", "Swap complete, Jace says you’re killing it!", "Jace pulled it off, trade’s a success!", "Done deal, Jace made it happen, fam!"],
+            swapFail: ["Swap didn’t go through, Jace says try again!", "Jace hit a glitch, let’s retry the trade!", "Trade failed, Jace needs another shot!", "Something broke, Jace says give it one more go!"],
+            swapNoToken: ["Jace needs a token to swap, pick one!", "No token? Jace can’t swap air, fam!", "Yo, Jace says select a token first!", "Jace is waiting, choose a token to trade!"],
+            swapNoAmount: ["Jace needs an amount, enter something!", "No amount? Jace can’t work with zero!", "Yo, give Jace a number to swap, fam!", "Jace says fill in the amount, let’s go!"],
+            highPriceImpact: ["Jace warns: price impact’s too high, scale it down!", "Too much impact, Jace says try a smaller amount!", "Swap’s too big, Jace suggests lowering it!", "Price impact’s wild, Jace says reduce it!"],
+            insufficientLiquidity: ["Jace says the pool’s too dry for this swap!", "Not enough liquidity, Jace needs a smaller trade!", "Pool’s empty, Jace says try less!", "Jace can’t swim here, too little liquidity!"],
+            approving: ["Jace is approving your tokens, one sec!", "Token approval in progress, Jace’s on it!", "Jace is setting up the trade, hold tight!", "Authorizing tokens, Jace is locking it in!"],
+            userDenied: ["Yo, you bailed on Jace! Approve next time!", "Jace was ready, but you said no, retry!", "Denied the trade? Jace says try again!", "Jace got rejected, let’s do this again!"],
+            invalidToken: ["Jace says that token’s no good, try another!", "Invalid address, Jace needs a real token!", "Jace can’t find that token, check the address!", "Bad token, Jace says enter a valid one!"]
         };
 
         function getRandomMessage(type, param1, param2) {
@@ -529,18 +533,18 @@
                 const token = { 
                     address: tokenAddress, 
                     symbol, 
-                    logo: "images/placeholder.png", // Placeholder for non-OKB tokens
-                    isNative: tokenAddress === wethAddress 
+                    avatar: "🔘", // Default emoji for non-OKB tokens
+                    isNative: tokenAddress.toLowerCase() === wethAddress.toLowerCase()
                 };
                 if (type === 'to') {
                     toToken = token;
-                    document.getElementById('toTokenInfo').innerHTML = `<img src="${token.logo}" alt="${symbol}"><span>${symbol}</span>`;
+                    document.getElementById('toTokenInfo').innerHTML = `<div class="avatar">${token.avatar}</div><span>${symbol}</span>`;
                     if (isFromOKB) {
                         fromToken = okbToken;
                     } else {
                         fromToken = token;
                         toToken = okbToken;
-                        document.getElementById('fromTokenInfo').innerHTML = `<img src="${fromToken.logo}" alt="${fromToken.symbol}"><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
+                        document.getElementById('fromTokenInfo').innerHTML = `<div class="avatar">${fromToken.avatar}</div><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
                     }
                 }
                 tokenAddressInput.value = '';
@@ -564,8 +568,8 @@
             }
             isFromOKB = !isFromOKB;
             [fromToken, toToken] = [toToken, fromToken];
-            document.getElementById('fromTokenInfo').innerHTML = `<img src="${fromToken.logo}" alt="${fromToken.symbol}"><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
-            document.getElementById('toTokenInfo').innerHTML = `<img src="${toToken.logo}" alt="${toToken.symbol}"><span>${toToken.symbol}</span>`;
+            document.getElementById('fromTokenInfo').innerHTML = `<div class="avatar">${fromToken.avatar}</div><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
+            document.getElementById('toTokenInfo').innerHTML = `<div class="avatar">${toToken.avatar}</div><span>${toToken.symbol}</span>`;
             jaceMessage.innerText = getRandomMessage('switchTokens');
             updateBalances();
             calculateOutput();
@@ -631,7 +635,7 @@
         }
 
         async function approveToken(tokenAddress, amount) {
-            if (tokenAddress === wethAddress && fromToken.isNative) return;
+            if (tokenAddress.toLowerCase() === wethAddress.toLowerCase() && fromToken.isNative) return;
             const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
             const allowance = await tokenContract.methods.allowance(account, routerAddress).call();
             if (web3.utils.toBN(allowance).lt(web3.utils.toBN(amount))) {
@@ -698,8 +702,8 @@
                 const pairContract = new web3.eth.Contract(pairAbi, pairAddress);
                 const reserves = await pairContract.methods.getReserves().call();
                 const token0 = await pairContract.methods.token0().call();
-                const reserveFrom = token0 === fromToken.address ? reserves.reserve0 : reserves.reserve1;
-                const reserveTo = token0 === fromToken.address ? reserves.reserve1 : reserves.reserve0;
+                const reserveFrom = token0.toLowerCase() === fromToken.address.toLowerCase() ? reserves.reserve0 : reserves.reserve1;
+                const reserveTo = token0.toLowerCase() === fromToken.address.toLowerCase() ? reserves.reserve1 : reserves.reserve0;
                 const reserveFromBN = web3.utils.toBN(reserveFrom);
                 const reserveToBN = web3.utils.toBN(reserveTo);
                 const priceImpact = amountInWei.mul(web3.utils.toBN(100)).div(reserveFromBN.add(amountInWei));
