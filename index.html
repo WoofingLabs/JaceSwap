@@ -8,42 +8,169 @@
     <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #121212; color: #E6E6E6; padding: 20px; min-height: 100vh; line-height: 1.5; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 30px; background: #1A1A1A; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
-        h1 { text-align: center; color: #00BFA5; font-size: clamp(1.8em, 5vw, 2.5em); margin-bottom: 25px; font-weight: 700; text-transform: uppercase; }
-        .section { background: #222222; padding: 20px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #00BFA5; }
-        h2 { color: #00BFA5; font-size: clamp(1.2em, 3.5vw, 1.6em); margin-bottom: 15px; font-weight: 600; }
-        .button { background: #00BFA5; color: #121212; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: 1em; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease; margin: 5px; }
-        .button:hover { background: #009688; transform: translateY(-2px); }
-        .button:disabled { background: #444; color: #777; cursor: not-allowed; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #00BFA5; border-radius: 6px; background: #2A2A2A; color: #E6E6E6; font-size: 1em; }
-        textarea { min-height: 150px; resize: vertical; }
-        input::placeholder, textarea::placeholder { color: #666; }
-        .status { margin-top: 10px; font-size: 0.9em; color: #00BFA5; }
-        .wallet-info { color: #00BFA5; font-weight: 600; word-break: break-all; }
-        .token-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .token-table th, .token-table td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-        .token-table th { background: #2A2A2A; color: #00BFA5; font-weight: 600; }
-        .token-img { width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; }
-        .loading { opacity: 0.7; pointer-events: none; }
-        .footer { text-align: center; margin-top: 30px; font-size: 0.85em; color: #666; }
-        .footer a { color: #00BFA5; text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
-        .how-it-works { background: #222222; padding: 20px; border-radius: 8px; border: 1px solid #00BFA5; margin-top: 20px; }
-        .how-it-works ul { list-style-type: disc; padding-left: 20px; margin-top: 10px; }
-        .how-it-works li { margin-bottom: 12px; font-size: 0.9em; }
-        .how-it-works .highlight { color: #00BFA5; font-weight: 600; }
-        .error { color: #FF5252; font-weight: 600; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #121212; 
+            color: #E6E6E6; 
+            padding: 15px; 
+            min-height: 100vh; 
+            line-height: 1.6; 
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #1A1A1A; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
+        }
+        h1 { 
+            text-align: center; 
+            color: #00BFA5; 
+            font-size: clamp(1.6em, 4vw, 2em); 
+            margin-bottom: 20px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        }
+        .section { 
+            background: #222222; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #00BFA5; 
+        }
+        h2 { 
+            color: #00BFA5; 
+            font-size: clamp(1em, 3vw, 1.3em); 
+            margin-bottom: 10px; 
+            font-weight: 600; 
+        }
+        .button { 
+            background: #00BFA5; 
+            color: #121212; 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 0.9em; 
+            cursor: pointer; 
+            transition: background 0.3s ease, transform 0.2s ease; 
+            margin: 5px 0; 
+            width: 100%; 
+            max-width: 180px; 
+        }
+        .button:hover { 
+            background: #009688; 
+            transform: translateY(-2px); 
+        }
+        .button:disabled { 
+            background: #444; 
+            color: #777; 
+            cursor: not-allowed; 
+        }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 8px 0; 
+            border: 1px solid #00BFA5; 
+            border-radius: 6px; 
+            background: #2A2A2A; 
+            color: #E6E6E6; 
+            font-size: 0.9em; 
+            box-sizing: border-box; 
+        }
+        textarea { 
+            min-height: 100px; 
+            resize: vertical; 
+        }
+        input::placeholder, textarea::placeholder { 
+            color: #666; 
+        }
+        .status { 
+            margin-top: 8px; 
+            font-size: 0.85em; 
+            color: #00BFA5; 
+        }
+        .error { 
+            color: #FF5252; 
+            font-weight: 600; 
+        }
+        .wallet-info { 
+            color: #00BFA5; 
+            font-weight: 600; 
+            word-break: break-all; 
+        }
+        .token-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            background: #2A2A2A; 
+        }
+        .token-table th, .token-table td { 
+            padding: 8px; 
+            text-align: left; 
+            border-bottom: 1px solid #333; 
+            font-size: 0.85em; 
+        }
+        .token-table th { 
+            background: #2A2A2A; 
+            color: #00BFA5; 
+            font-weight: 600; 
+        }
+        .token-img { 
+            width: 18px; 
+            height: 18px; 
+            vertical-align: middle; 
+            margin-right: 5px; 
+        }
+        .loading { 
+            opacity: 0.7; 
+            pointer-events: none; 
+        }
+        .footer { 
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 0.8em; 
+            color: #666; 
+        }
+        .footer a { 
+            color: #00BFA5; 
+            text-decoration: none; 
+        }
+        .footer a:hover { 
+            text-decoration: underline; 
+        }
+        .how-it-works { 
+            background: #222222; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #00BFA5; 
+            margin-top: 15px; 
+        }
+        .how-it-works ul { 
+            list-style-type: disc; 
+            padding-left: 20px; 
+            margin-top: 8px; 
+        }
+        .how-it-works li { 
+            margin-bottom: 8px; 
+            font-size: 0.85em; 
+        }
+        .how-it-works .highlight { 
+            color: #00BFA5; 
+            font-weight: 600; 
+        }
         @media (max-width: 768px) {
-            .container { padding: 15px; }
-            .section, .how-it-works { padding: 15px; }
-            .button { width: 100%; padding: 12px; margin: 8px 0; }
-            .token-table { display: block; overflow-x: auto; }
-            .token-table th, .token-table td { font-size: 0.85em; padding: 10px; }
-            .token-table tr { display: block; margin-bottom: 10px; border-bottom: 1px solid #333; }
-            .token-table td { display: block; text-align: left; }
+            .container { padding: 10px; }
+            .section, .how-it-works { padding: 10px; }
+            .button { padding: 8px; max-width: 100%; }
+            .token-table { overflow-x: auto; white-space: nowrap; }
+            .token-table th, .token-table td { font-size: 0.8em; padding: 6px; }
+            .token-table thead, .token-table tbody, .token-table tr, .token-table td, .token-table th { 
+                display: table-cell; 
+            }
             .how-it-works ul { padding-left: 15px; }
-            .how-it-works li { font-size: 0.85em; }
+            .how-it-works li { font-size: 0.8em; }
         }
     </style>
 </head>
@@ -63,7 +190,7 @@
                 <option value="Token">Token</option>
             </select>
             <input type="text" id="tokenAddress" placeholder="Token Address (e.g., 0x...)" style="display: none;">
-            <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0xfb10e2b3f29931f8372680877f1e4b3a139d9fa3,10000\n0xb82b803105107dd873baa9e61435d4710b531d6b,11000)"></textarea>
+            <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0x123...abc,10000\n0x456...def,11000)"></textarea>
             <button id="sendBatch" class="button">Send Batch Transfer</button>
             <div id="multisendStatus" class="status"></div>
             <table class="token-table">
@@ -85,7 +212,7 @@
                 <li><strong>Select Transfer Type</strong>: Choose <span class="highlight">OKB</span> for mainnet coin or <span class="highlight">Token</span> for ERC20 tokens.</li>
                 <li><strong>Enter Token Address</strong>: If transferring tokens, input a valid ERC20 token contract address.</li>
                 <li><strong>Input Addresses & Amounts</strong>: Enter one address and amount per line (e.g., <span class="highlight">0x...address,10000</span>). Supports up to 200 addresses.</li>
-                <li><strong>Send Batch</strong>: Click to approve (if tokens) and execute the transfer in one go.</li>
+                <li><strong>Send Batch</strong>: Approve tokens if needed, then execute the transfer.</li>
             </ul>
         </div>
         <div class="footer">
@@ -108,7 +235,8 @@
 
         const tokenABI = [
             { "inputs": [{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-            { "inputs": [{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+            { "inputs": [{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            { "inputs": [],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"}
         ];
 
         const xLayer = { chainId: 196, name: 'X Layer mainnet', explorerUrl: 'https://www.okx.com/web3/explorer/xlayer', rpcUrl: 'https://rpc.xlayer.tech' };
@@ -152,7 +280,7 @@
                 console.log("Wallet connected:", accounts[0]);
             } catch (error) {
                 console.error("Connect error:", error);
-                status.textContent = `Connection failed: ${error.message}`;
+                status.textContent = `Error: ${error.message}`;
                 sendButton.disabled = true;
             }
         }
@@ -164,52 +292,69 @@
             parseTransferList();
         }
 
-        function parseTransferList() {
+        async function parseTransferList() {
             const transferList = document.getElementById('transferList').value.trim();
             const transferType = document.getElementById('transferType').value;
             const lines = transferList.split('\n').map(line => line.trim()).filter(line => line);
             const transfers = [];
             const previewBody = document.getElementById('transferPreview');
+            const status = document.getElementById('multisendStatus');
             previewBody.innerHTML = '';
 
             if (lines.length > 200) {
-                alert("Maximum 200 addresses allowed!");
+                status.textContent = "Error: Maximum 200 addresses allowed";
                 return null;
             }
 
             let totalAmount = web3.utils.toBN(0);
             let symbol = 'OKB';
             let logo = OKB_LOGO;
+            let decimals = 18;
 
             if (transferType === 'Token') {
                 const tokenAddress = document.getElementById('tokenAddress').value.trim();
                 if (!web3.utils.isAddress(tokenAddress)) {
-                    alert("Invalid token address!");
+                    status.textContent = "Error: Invalid token address";
                     return null;
                 }
-                symbol = 'Token';
-                logo = `https://ui-avatars.com/api/?name=T&background=00BFA5&color=121212&size=24`;
+                if (web3 && accounts) {
+                    try {
+                        const code = await web3.eth.getCode(tokenAddress);
+                        if (code === '0x') {
+                            status.textContent = "Error: Token address is not a contract";
+                            return null;
+                        }
+                        const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+                        decimals = await tokenContract.methods.decimals().call().catch(() => 18);
+                        symbol = 'Token';
+                        logo = `https://ui-avatars.com/api/?name=T&background=00BFA5&color=121212&size=18`;
+                    } catch (error) {
+                        status.textContent = `Error: Failed to validate token: ${error.message}`;
+                        return null;
+                    }
+                }
             }
 
             for (const line of lines) {
                 const [address, amountStr] = line.split(',').map(item => item.trim());
                 if (!web3.utils.isAddress(address)) {
-                    alert(`Invalid address: ${address}`);
+                    status.textContent = `Error: Invalid address: ${address}`;
                     return null;
                 }
                 const amount = parseFloat(amountStr);
                 if (isNaN(amount) || amount <= 0) {
-                    alert(`Invalid amount for address ${address}: ${amountStr}`);
+                    status.textContent = `Error: Invalid amount for address ${address}: ${amountStr}`;
                     return null;
                 }
-                const amountWei = web3.utils.toWei(amountStr, 'ether'); // Assuming 18 decimals for simplicity
+                const amountWei = web3.utils.toWei(amountStr, decimals === 18 ? 'ether' : { unit: 'wei', decimals });
                 transfers.push({ address, amount: amountWei });
                 const row = document.createElement('tr');
                 row.innerHTML = `<td><img src="${logo}" class="token-img">${symbol}</td><td>${address.slice(0, 6)}...${address.slice(-4)}</td><td>${amount}</td>`;
                 previewBody.appendChild(row);
                 totalAmount = totalAmount.add(web3.utils.toBN(amountWei));
             }
-            return { transfers, totalAmount };
+            status.textContent = transfers.length > 0 ? `Ready to send to ${transfers.length} addresses` : '';
+            return { transfers, totalAmount, decimals };
         }
 
         async function sendBatchTransfer() {
@@ -218,49 +363,50 @@
             const sendButton = document.getElementById('sendBatch');
 
             if (!web3 || !accounts) {
-                alert("Connect wallet first!");
-                status.textContent = "Wallet not connected";
+                status.textContent = "Error: Connect wallet first";
                 return;
             }
 
-            const parsed = parseTransferList();
+            const parsed = await parseTransferList();
             if (!parsed) {
-                status.textContent = "Invalid transfer list";
                 return;
             }
-            const { transfers, totalAmount } = parsed;
+            const { transfers, totalAmount, decimals } = parsed;
             if (transfers.length === 0) {
-                alert("No transfers provided!");
-                status.textContent = "No transfers to process";
+                status.textContent = "Error: No transfers provided";
                 return;
             }
 
             try {
                 section.classList.add('loading');
                 sendButton.disabled = true;
-                status.textContent = "Preparing...";
+                status.textContent = "Estimating gas...";
 
                 const gasPrice = await web3.eth.getGasPrice();
-                const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
+                const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(12)).div(web3.utils.toBN(10)); // Reduced multiplier for X Layer
                 const transferType = document.getElementById('transferType').value;
                 const targets = transfers.map(t => t.address);
                 const amounts = transfers.map(t => t.amount);
-                const gasLimit = 200000 + (transfers.length * 50000);
+                let gasLimit = 200000 + (transfers.length * 60000); // Increased for safety
 
                 if (transferType === 'Token') {
                     const tokenAddress = document.getElementById('tokenAddress').value.trim();
                     const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-                    status.textContent = "Checking allowance...";
+                    status.textContent = "Checking token allowance...";
                     const allowance = await tokenContract.methods.allowance(accounts[0], multisendAddress).call();
                     if (web3.utils.toBN(allowance).lt(totalAmount)) {
                         status.textContent = "Approving tokens...";
+                        const approveGas = await tokenContract.methods.approve(multisendAddress, MAX_UINT256).estimateGas({ from: accounts[0] });
                         await tokenContract.methods.approve(multisendAddress, MAX_UINT256).send({
                             from: accounts[0],
-                            gas: 100000,
+                            gas: Math.ceil(approveGas * 1.2),
                             gasPrice: adjustedGasPrice
                         });
                         status.textContent = "Approval done, sending...";
                     }
+                    status.textContent = "Estimating token transfer gas...";
+                    gasLimit = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).estimateGas({ from: accounts[0] }).catch(() => gasLimit);
+                    gasLimit = Math.ceil(gasLimit * 1.3); // 30% buffer
                     status.textContent = "Sending token batch...";
                     await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({
                         from: accounts[0],
@@ -268,6 +414,9 @@
                         gasPrice: adjustedGasPrice
                     });
                 } else {
+                    status.textContent = "Estimating OKB transfer gas...";
+                    gasLimit = await multisendContract.methods.multisendEth(targets, amounts).estimateGas({ from: accounts[0], value: totalAmount }).catch(() => gasLimit);
+                    gasLimit = Math.ceil(gasLimit * 1.3); // 30% buffer
                     status.textContent = "Sending OKB batch...";
                     await multisendContract.methods.multisendEth(targets, amounts).send({
                         from: accounts[0],
@@ -281,7 +430,7 @@
                 document.getElementById('transferPreview').innerHTML = '';
             } catch (error) {
                 console.error("Send error:", error);
-                status.textContent = `Failed: ${error.message || 'Unknown error'}`;
+                status.textContent = `Error: ${error.message || 'Transaction failed'}`;
             } finally {
                 section.classList.remove('loading');
                 sendButton.disabled = false;
@@ -291,6 +440,7 @@
         document.getElementById('connectButton').addEventListener('click', connectWallet);
         document.getElementById('sendBatch').addEventListener('click', sendBatchTransfer);
         document.getElementById('transferList').addEventListener('input', parseTransferList);
+        document.getElementById('tokenAddress').addEventListener('input', parseTransferList);
 
         window.addEventListener('load', () => {
             document.getElementById('sendBatch').disabled = true;
