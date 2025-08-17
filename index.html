@@ -3,63 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jace Multisend</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400 Weswap.com/explorer/xlayer" target="_blank">X Layer</a> | Jace Multisend © 2025
+    <title>Jace Multisend - X Layer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #121212; 
+            color: #E6E6E6; 
+            padding: 20px; 
+            min-height: 100vh; 
+            line-height: 1.5; 
+        }
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding: 30px; 
+            background: #1A1A1A; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+        }
+        h1 { 
+            text-align: center; 
+            color: #00BFA5; 
+            font-size: clamp(1.8em, 5vw, 2.5em); 
+            margin-bottom: 25px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        }
+        .section { 
+            background: #222222; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #00BFA5; 
+        }
+        h2 { 
+            color: #00BFA5; 
+            font-size: clamp(1.2em, 3.5vw, 1.6em); 
+            margin-bottom: 15px; 
+            font-weight: 600; 
+        }
+        .button { 
+            background: #00BFA5; 
+            color: #121212; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 1em; 
+            cursor: pointer; 
+            transition: background 0.3s ease, transform 0.2s ease; 
+            margin: 5px; 
+        }
+        .button:hover { 
+            background: #009688; 
+            transform: translateY(-2px); 
+        }
+        .button:disabled { 
+            background: #444; 
+            color: #777; 
+            cursor: not-allowed; 
+        }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #00BFA5; 
+            border-radius: 6px; 
+            background: #2A2A2A; 
+            color: #E6E6E6; 
+            font-size: 1em; 
+        }
+        textarea { 
+            min-height: 150px; 
+            resize: vertical; 
+        }
+        input::placeholder, textarea::placeholder { 
+            color: #666; 
+        }
+        .status { 
+            margin-top: 10px; 
+            font-size: 0.9em; 
+            color: #00BFA5; 
+        }
+        .wallet-info { 
+            color: #00BFA5; 
+            font-weight: 600; 
+            word-break: break-all; 
+        }
+        .token-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+        }
+        .token-table th, .token-table td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #333; 
+        }
+        .token-table th { 
+            background: #2A2A2A; 
+            color: #00BFA5; 
+            font-weight: 600; 
+        }
+        .token-img { 
+            width: 24px; 
+            height: 24px; 
+            vertical-align: middle; 
+            margin-right: 8px; 
+        }
+        .copy-btn { 
+            background: #333; 
+            color: #00BFA5; 
+            padding: 6px 12px; 
+            font-size: 0.85em; 
+            border-radius: 4px; 
+        }
+        .copy-btn:hover { 
+            background: #3A3A3A; 
+        }
+        .loading { 
+            opacity: 0.7; 
+            pointer-events: none; 
+        }
+        .footer { 
+            text-align: center; 
+            margin-top: 30px; 
+            font-size: 0.85em; 
+            color: #666; 
+        }
+        .footer a { 
+            color: #00BFA5; 
+            text-decoration: none; 
+        }
+        .footer a:hover { 
+            text-decoration: underline; 
+        }
+        .how-it-works { 
+            background: #222222; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #00BFA5; 
+            margin-top: 20px; 
+        }
+        .how-it-works ul { 
+            list-style-type: disc; 
+            padding-left: 20px; 
+            margin-top: 10px; 
+        }
+        .how-it-works li { 
+            margin-bottom: 12px; 
+            font-size: 0.9em; 
+        }
+        .how-it-works .highlight { 
+            color: #00BFA5; 
+            font-weight: 600; 
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .section, .how-it-works { padding: 15px; }
+            .button { width: 100%; padding: 12px; margin: 8px 0; }
+            .token-table { display: block; overflow-x: auto; }
+            .token-table th, .token-table td { font-size: 0.85em; padding: 10px; }
+            .token-table tr { display: block; margin-bottom: 10px; border-bottom: 1px solid #333; }
+            .token-table td { display: block; text-align: left; }
+            .token-table td button { width: 100%; margin: 5px 0; }
+            .how-it-works ul { padding-left: 15px; }
+            .how-it-works li { font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jace Multisend</h1>
+        <div class="section">
+            <h2>Connect to X Layer</h2>
+            <button id="connectButton" class="button">Connect Wallet</button>
+            <p>Wallet: <span id="walletAddress" class="wallet-info">Not connected</span></p>
+            <div id="networkStatus" class="status">Click to connect...</div>
+        </div>
+        <div class="section" id="multisendSection">
+            <h2>Batch Transfer</h2>
+            <select id="transferType" onchange="toggleTokenAddress()">
+                <option value="OKB">OKB (X Layer Mainnet Coin)</option>
+                <option value="Token">Token</option>
+            </select>
+            <input type="text" id="tokenAddress" placeholder="Token Address (e.g., 0x...)" style="display: none;">
+            <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0xfb10e2b3f29931f8372680877f1e4b3a139d9fa3,10000\n0xb82b803105107dd873baa9e61435d4710b531d6b,10000)"></textarea>
+            <button id="sendBatch" class="button">Send Batch Transfer</button>
+            <div id="multisendStatus" class="status"></div>
+            <table class="token-table">
+                <thead>
+                    <tr>
+                        <th>Coin</th>
+                        <th>Address</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="transferPreview"></tbody>
+            </table>
+        </div>
+        <div class="how-it-works">
+            <h2>How It Works?</h2>
+            <p>Send OKB or tokens to multiple addresses on X Layer with Jace Multisend:</p>
+            <ul>
+                <li><strong>Connect Your Wallet</strong>: Use MetaMask to connect to X Layer (chain ID: 196). Ensure you have enough <span class="highlight">OKB</span> for gas fees.</li>
+                <li><strong>Select Transfer Type</strong>: Choose <span class="highlight">OKB</span> for mainnet coin or <span class="highlight">Token</span> for ERC20 tokens.</li>
+                <li><strong>Enter Token Address</strong>: If transferring tokens, input the ERC20 token contract address.</li>
+                <li><strong>Input Addresses & Amounts</strong>: Enter one address and amount per line (e.g., <span class="highlight">0x...address,10000</span>). Supports up to 200 addresses.</li>
+                <li><strong>Approve Tokens (if needed)</strong>: For token transfers, approve the MultisendTool contract to spend your tokens.</li>
+                <li><strong>Send Batch</strong>: Execute the transfer using the MultisendTool contract for secure and efficient batch transfers.</li>
+            </ul>
+        </div>
+        <div class="footer">
+            Powered by <a href="https://www.okx.com/web3/explorer/xlayer" target="_blank">X Layer</a> | Jace Multisend © 2025
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         let web3, accounts, multisendContract;
-        const multisendContractAddress = "0xa0efAC6b1096a4D2C40BFb2a32dC2AF71a45A9F8";
+        const multisendAddress = "0xa0efAC6b1096a4D2C40BFb2a32dC2AF71a45A9F8";
+        const OKB_LOGO = "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png";
 
         const multisendABI = [
             {
-                inputs: [
-                    { internalType: "address", name: "_token", type: "address" },
-                    { internalType: "address[]", name: "_targets", type: "address[]" },
-                    { internalType: "uint256[]", name: "_amounts", type: "uint256[]" }
+                "inputs": [
+                    { "internalType": "address", "name": "_token", "type": "address" },
+                    { "internalType": "address[]", "name": "_targets", "type": "address[]" },
+                    { "internalType": "uint[]", "name": "_amounts", "type": "uint[]" }
                 ],
-                name: "multisendToken",
-                outputs: [],
-                stateMutability: "nonpayable",
-                type: "function"
+                "name": "multisendToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
             },
             {
-                inputs: [
-                    { internalType: "address[]", name: "_targets", type: "address[]" },
-                    { internalType: "uint256[]", name: "_amounts", type: "uint256[]" }
+                "inputs": [
+                    { "internalType": "address[]", "name": "_targets", "type": "address[]" },
+                    { "internalType": "uint[]", "name": "_amounts", "type": "uint[]" }
                 ],
-                name: "multisendEth",
-                outputs: [],
-                stateMutability: "payable",
-                type: "function"
+                "name": "multisendEth",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    { "internalType": "address", "name": "to", "type": "address" },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    { "internalType": "address", "name": "_token", "type": "address" },
+                    { "internalType": "address", "name": "to", "type": "address" },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                ],
+                "name": "withdrawToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
             }
         ];
 
         const tokenABI = [
             {
-                inputs: [
-                    { internalType: "address", name: "spender", type: "address" },
-                    { internalType: "uint256", name: "value", type: "uint256" }
+                "inputs": [
+                    { "internalType": "address", "name": "spender", "type": "address" },
+                    { "internalType": "uint256", "name": "value", "type": "uint256" }
                 ],
-                name: "approve",
-                outputs: [{ internalType: "bool", name: "", type: "bool" }],
-                stateMutability: "nonpayable",
-                type: "function"
+                "name": "approve",
+                "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                "stateMutability": "nonpayable",
+                "type": "function"
             },
             {
-                inputs: [],
-                name: "decimals",
-                outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
-                stateMutability: "view",
-                type: "function"
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+                "stateMutability": "view",
+                "type": "function"
             },
             {
-                inputs: [],
-                name: "symbol",
-                outputs: [{ internalType: "string", name: "", type: "string" }],
-                stateMutability: "view",
-                type: "function"
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
 
@@ -108,7 +344,7 @@
                     }
                 }
                 document.getElementById('walletAddress').innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
-                multisendContract = new web3.eth.Contract(multisendABI, multisendContractAddress);
+                multisendContract = new web3.eth.Contract(multisendABI, multisendAddress);
                 status.innerText = "Connected to X Layer";
             } catch (error) {
                 console.error(error);
@@ -116,102 +352,148 @@
             }
         }
 
-        function toggleTokenAddressInput() {
-            const coinType = document.getElementById('coinType').value;
+        function toggleTokenAddress() {
+            const transferType = document.getElementById('transferType').value;
             const tokenAddressInput = document.getElementById('tokenAddress');
-            const coinIcon = document.getElementById('coinIcon');
-            tokenAddressInput.style.display = coinType === 'token' ? 'block' : 'none';
-            if (coinType === 'OKB') {
-                coinIcon.innerHTML = `<img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="OKB" style="width: 24px; height: 24px; vertical-align: middle;"> OKB`;
-            } else {
-                coinIcon.innerHTML = '<span style="display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; background: #00BFA5; color: #121212; border-radius: 50%; font-weight: 600;">T</span> Token';
-            }
+            tokenAddressInput.style.display = transferType === 'Token' ? 'block' : 'none';
+            document.getElementById('transferPreview').innerHTML = '';
         }
 
-        async function multisend() {
+        async function parseTransferList() {
+            const transferList = document.getElementById('transferList').value.trim();
+            const transferType = document.getElement wed3.utils.isAddress(accounts[0]) ? accounts[0] : '';
+            const lines = transferList.split('\n').map(line => line.trim()).filter(line => line);
+            const transfers = [];
+            const previewBody = document.getElementById('transferPreview');
+            previewBody.innerHTML = '';
+
+            if (lines.length > 200) {
+                alert("Maximum 200 addresses allowed!");
+                return null;
+            }
+
+            let totalAmount = web3.utils.toBN(0);
+            let symbol = 'OKB';
+            let decimals = 18;
+            let logo = OKB_LOGO;
+
+            if (transferType === 'Token') {
+                const tokenAddress = document.getElementById('tokenAddress').value.trim();
+                if (!web3.utils.isAddress(tokenAddress)) {
+                    alert("Invalid token address!");
+                    return null;
+                }
+                try {
+                    const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+                    symbol = await tokenContract.methods.symbol().call();
+                    decimals = await tokenContract.methods.decimals().call();
+                    logo = `https://ui-avatars.com/api/?name=${symbol[0]}&background=00BFA5&color=121212&size=24`;
+                } catch (error) {
+                    alert("Failed to fetch token details: " + error.message);
+                    return null;
+                }
+            }
+
+            for (const line of lines) {
+                const [address, amount] = line.split(',').map(item => item.trim());
+                if (!web3.utils.isAddress(address)) {
+                    alert(`Invalid address: ${address}`);
+                    return null;
+                }
+                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                    alert(`Invalid amount for address ${address}: ${amount}`);
+                    return null;
+                }
+                const amountWei = web3.utils.toWei(amount, 'ether');
+                transfers.push({ address, amount: amountWei });
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${logo}" class="token-img">${symbol}</td>
+                    <td>${address.slice(0, 6)}...${address.slice(-4)}</td>
+                    <td>${amount}</td>
+                `;
+                previewBody.appendChild(row);
+                totalAmount = totalAmount.add(web3.utils.toBN(amountWei));
+            }
+
+            return { transfers, totalAmount, symbol, decimals };
+        }
+
+        async function sendBatchTransfer() {
             const section = document.getElementById('multisendSection');
             const status = document.getElementById('multisendStatus');
-            const coinType = document.getElementById('coinType').value;
-            const tokenAddress = coinType === 'token' ? document.getElementById('tokenAddress').value.trim() : null;
-            const transfersInput = document.getElementById('transfers').value.trim();
-            if (coinType === 'token' && (!tokenAddress || !web3.utils.isAddress(tokenAddress))) {
-                return alert("Please enter a valid token address!");
+            if (!accounts) {
+                alert("Please connect your wallet first!");
+                return;
             }
-            if (!transfersInput) return alert("Please enter recipient addresses and amounts!");
-            if (!accounts) return alert("Please connect your wallet first!");
 
-            // Parse transfers
-            const lines = transfersInput.split('\n').map(line => line.trim()).filter(line => line);
-            const targets = [];
-            const amounts = [];
-            let decimals = coinType === 'OKB' ? 18 : null;
-            try {
-                if (coinType === 'token') {
-                    const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-                    decimals = await tokenContract.methods.decimals().call();
-                    const symbol = await tokenContract.methods.symbol().call();
-                    document.getElementById('coinIcon').innerHTML = `<span style="display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; background: #00BFA5; color: #121212; border-radius: 50%; font-weight: 600;">${symbol.charAt(0).toUpperCase()}</span> ${symbol}`;
-                }
-                for (const line of lines) {
-                    const [address, amount] = line.split(',').map(item => item.trim());
-                    if (!web3.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);
-                    const parsedAmount = parseFloat(amount);
-                    if (isNaN(parsedAmount) || parsedAmount <= 0) throw new Error(`Invalid amount for ${address}: ${amount}`);
-                    targets.push(address);
-                    const amountInWei = web3.utils.toBN(Math.floor(parsedAmount * Math.pow(10, decimals)));
-                    amounts.push(amountInWei);
-                }
-            } catch (error) {
-                console.error(error);
-                status.innerText = "Error parsing transfers: " + error.message;
+            const parsed = await parseTransferList();
+            if (!parsed) return;
+            const { transfers, totalAmount, symbol, decimals } = parsed;
+            if (transfers.length === 0) {
+                alert("No valid transfers provided!");
                 return;
             }
 
             try {
                 section.classList.add('loading');
-                status.innerText = `Sending ${coinType === 'OKB' ? 'OKB' : 'tokens'}...`;
+                status.innerText = "Processing batch transfer...";
                 const gasPrice = await web3.eth.getGasPrice();
                 const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
-                let tx;
-                if (coinType === 'token') {
-                    // Approve token spending
+
+                const transferType = document.getElementById('transferType').value;
+                const targets = transfers.map(t => t.address);
+                const amounts = transfers.map(t => t.amount);
+
+                if (transferType === 'Token') {
+                    const tokenAddress = document.getElementById('tokenAddress').value.trim();
                     const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-                    const totalAmount = amounts.reduce((sum, amount) => sum.add(amount), web3.utils.toBN(0));
-                    await tokenContract.methods.approve(multisendContractAddress, totalAmount).send({
+                    status.innerText = "Approving token spend...";
+                    await tokenContract.methods.approve(multisendAddress, totalAmount).send({
                         from: accounts[0],
                         gas: '100000',
                         gasPrice: adjustedGasPrice
                     });
-                    // Multisend tokens
-                    tx = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({
+                    status.innerText = "Sending token batch transfer...";
+                    const tx = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({
                         from: accounts[0],
-                        gas: (100000 + targets.length * 50000).toString(),
+                        gas: String(200000 + transfers.length * 50000),
                         gasPrice: adjustedGasPrice
                     });
+                    status.innerHTML = `Batch transfer successful! <a href="${xLayer.explorerUrl}/tx/${tx.transactionHash}" target="_blank">View on Explorer</a>`;
                 } else {
-                    // Multisend OKB
-                    const totalAmount = amounts.reduce((sum, amount) => sum.add(amount), web3.utils.toBN(0));
-                    tx = await multisendContract.methods.multisendEth(targets, amounts).send({
+                    status.innerText = "Sending OKB batch transfer...";
+                    const tx = await multisendContract.methods.multisendEth(targets, amounts).send({
                         from: accounts[0],
                         value: totalAmount,
-                        gas: (100000 + targets.length * 50000).toString(),
+                        gas: String(200000 + transfers.length * 50000),
                         gasPrice: adjustedGasPrice
                     });
+                    status.innerHTML = `Batch transfer successful! <a href="${xLayer.explorerUrl}/tx/${tx.transactionHash}" target="_blank">View on Explorer</a>`;
                 }
-                status.innerHTML = `${coinType === 'OKB' ? 'OKB' : 'Tokens'} sent! Transaction: <a href="${xLayer.explorerUrl}/tx/${tx.transactionHash}" target="_blank">${tx.transactionHash.slice(0, 6)}...${tx.transactionHash.slice(-4)}</a>`;
-                document.getElementById('tokenAddress').value = '';
-                document.getElementById('transfers').value = '';
+                document.getElementById('transferList').value = '';
+                document.getElementById('transferPreview').innerHTML = '';
             } catch (error) {
                 console.error(error);
-                status.innerText = `Failed to send ${coinType === 'OKB' ? 'OKB' : 'tokens'}: ` + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() || 'Unknown reason' : error.message);
+                status.innerText = "Failed to send batch transfer: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() || 'Unknown reason' : error.message);
             } finally {
                 section.classList.remove('loading');
             }
         }
 
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Address copied!");
+            }).catch(error => {
+                console.error('Failed to copy:', error);
+                alert("Failed to copy address!");
+            });
+        }
+
         document.getElementById('connectButton').addEventListener('click', connectWallet);
-        document.getElementById('coinType').addEventListener('change', toggleTokenAddressInput);
-        document.getElementById('multisendButton').addEventListener('click', multisend);
+        document.getElementById('sendBatch').addEventListener('click', sendBatchTransfer);
+        document.getElementById('transferList').addEventListener('input', parseTransferList);
 
         window.addEventListener('load', () => {
             if (!window.location.protocol.startsWith('http')) {
@@ -219,7 +501,6 @@
             } else if (!window.ethereum) {
                 document.getElementById('networkStatus').innerHTML = 'No wallet detected. Please install <a href="https://metamask.io">MetaMask</a>.';
             }
-            toggleTokenAddressInput();
         });
     </script>
 </body>
