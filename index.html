@@ -297,7 +297,7 @@
         </div>
         <button class="swap-button" id="swapButton" onclick="swapTokens()">Swap</button>
         <div class="dog-section">
-            <img src="images/shiba.gif" alt="Shiba Dog">
+            <img src="https://static.oklink.com/cdn/assets/imgs/235/4EC890FA53A98FFF.png" alt="WoofingJace">
             <div class="dog-message" id="dogMessage">"Woof! Connect your wallet to start swapping, pup!"</div>
         </div>
     </div>
@@ -340,7 +340,7 @@
             {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"},
             {"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"type":"function"}
         ];
-        const shibarium = {
+        const X - Layer = {
             chainId: 196,
             chainName: 'X Layer mainnet',
             nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
@@ -357,8 +357,8 @@
         const maxPriceImpact = 0.5;
 
         const dogMessages = {
-            connectStart: ["Woof woof! Sniffing out your wallet, hold tight, human!","Arf! Digging into Shibarium, let’s fetch that wallet!","Bow wow! Connecting to your stash, stay pawsitive!","Woof! I smell a wallet, let’s link it up quick!"],
-            connectSuccess: ["Arf arf! You’re in, pup! Time to chase some OKBs!","Woof! Wallet’s hooked, ready to roll in Shibarium!","Yip yip! Connected, hooman! Let’s swap some treats!","Bow wow! Welcome aboard, let’s sniff out some swaps!"],
+            connectStart: ["Woof woof! Sniffing out your wallet, hold tight, human!","Arf! Digging into X - Layer, let’s fetch that wallet!","Bow wow! Connecting to your stash, stay pawsitive!","Woof! I smell a wallet, let’s link it up quick!"],
+            connectSuccess: ["Arf arf! You’re in, pup! Time to chase some OKBs!","Woof! Wallet’s hooked, ready to roll in X - Layer!","Yip yip! Connected, hooman! Let’s swap some treats!","Bow wow! Welcome aboard, let’s sniff out some swaps!"],
             connectFail: ["Grrr... Wallet slipped away, try again, hooman!","Woof? No wallet scent detected, give it another go!","Arf arf! Something barked up, retry connecting, pup!","Ruff! Wallet’s hiding, let’s dig it out again!"],
             tokenModal: ["Woof! Pick a token, let’s sniff out a juicy deal!","Arf! What treat shall we fetch today, hooman?","Bow wow! Tokens galore, choose your fave, pup!","Yip! Time to pick a OKB to swap, let’s go!"],
             selectToken: (symbol) => [`Arf arf! ${symbol}, huh? Smells like a tasty choice!`,`Woof! ${symbol} caught your eye? Good nose, pup!`,`Bow wow! ${symbol} it is! Let’s wag into action!`,`Yip yip! ${symbol} sounds pawsome, ready to swap?`],
@@ -367,7 +367,7 @@
             calcStart: ["Woof! Sniffing out the best price, hang tight!","Arf! Digging up some swap numbers, stay put, pup!","Bow wow! Crunching OKBs, I’ll fetch the output soon!","Ruff! Calculating your treat, give me a sec, hooman!"],
             calcSuccess: (amount, symbol) => [`Arf! Found ya ${amount} ${symbol}! Ready to swap, pup?`,`Woof woof! Snagged ${amount} ${symbol}, let’s roll!`,`Yip yip! Dug up ${amount} ${symbol}, happy tail wags!`,`Bow wow! ${amount} ${symbol} sniffed out, swap time!`],
             calcFail: ["Grrr... No path for these OKBs, try a new pair, pup!","Woof? Swap trail’s cold, pick another token, hooman!","Arf arf! Couldn’t fetch the output, let’s retry!","Ruff! Swap math barked up, give it another go!"],
-            swapStart: ["Woof woof! Swapping time, let’s fetch those tokens!","Arf! Launching the swap, hold onto your leash, pup!","Bow wow! Trading OKBs, here we go, Shib style!","Yip! Swapping in Shibarium, let’s make it pawsome!"],
+            swapStart: ["Woof woof! Swapping time, let’s fetch those tokens!","Arf! Launching the swap, hold onto your leash, pup!","Bow wow! Trading OKBs, here we go, Shib style!","Yip! Swapping in X - Layer, let’s make it pawsome!"],
             swapSuccess: ["Arf arf! Swap done, you’re a Woofswap champ, hooman!","Woof! Tokens fetched, tail-wagging success, pup!","Bow wow! Swapped like a pro, time to celebrate!","Yip yip! Swap complete, you’re the top dog now!"],
             swapFail: ["Grrr... Swap didn’t work, let’s try again, pup!","Woof? Swap got lost, retry it, clever hooman!","Arf! Token chase failed, another go, Shib friend?","Ruff ruff! Swap slipped, let’s dig it up again!"],
             swapNoToken: ["Woof? Missing a token, pup! Pick one first!","Arf arf! No treats to swap, choose a pair, hooman!","Bow wow! Where’s the token? Let’s sniff one out!","Yip! Can’t swap air, pick a token, Shib pal!"],
@@ -406,7 +406,7 @@
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 if (!accounts.length) throw new Error("No accounts found. Please unlock your wallet.");
                 account = accounts[0];
-                await switchToShibarium();
+                await switchToX - Layer();
                 router = new web3.eth.Contract(routerAbi, routerAddress);
                 factory = new web3.eth.Contract(factoryAbi, factoryAddress);
                 updateUIAfterConnect();
@@ -421,7 +421,7 @@
             }
         }
 
-        async function switchToShibarium() {
+        async function switchToX - Layer() {
             const chainId = await web3.eth.getChainId();
             if (Number(chainId) !== 109) {
                 try {
@@ -433,7 +433,7 @@
                     if (switchError.code === 4902) {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
-                            params: [shibarium]
+                            params: [X - Layer]
                         });
                     } else {
                         throw switchError;
@@ -447,7 +447,7 @@
             const status = document.getElementById('networkStatus');
             const dogMessage = document.getElementById('dogMessage');
             connectButton.textContent = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
-            status.innerText = "Connected to Shibarium";
+            status.innerText = "Connected to X - Layer";
             dogMessage.innerText = getRandomMessage('connectSuccess');
         }
 
@@ -464,7 +464,7 @@
                 if (newAccounts.length) {
                     account = newAccounts[0];
                     if (web3) {
-                        await switchToShibarium();
+                        await switchToX - Layer();
                         router = new web3.eth.Contract(routerAbi, routerAddress);
                         factory = new web3.eth.Contract(factoryAbi, factoryAddress);
                         updateUIAfterConnect();
@@ -488,8 +488,8 @@
                     router = null;
                     factory = null;
                     resetUI();
-                    document.getElementById('networkStatus').innerText = "Wrong network. Reconnect to Shibarium.";
-                    document.getElementById('dogMessage').innerText = "Woof! Wrong chain, pup! Switch to Shibarium!";
+                    document.getElementById('networkStatus').innerText = "Wrong network. Reconnect to X - Layer.";
+                    document.getElementById('dogMessage').innerText = "Woof! Wrong chain, pup! Switch to X - Layer!";
                 } else if (account) {
                     await connectWallet();
                 }
