@@ -15,241 +15,237 @@
             --text-color: #E6E6E6;
             --border-radius: 12px;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--gradient-bg); 
+            color: var(--text-color); 
+            padding: 20px; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            line-height: 1.5; 
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gradient-bg);
-            color: var(--text-color);
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            line-height: 1.5;
+        .container { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--card-bg); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+            border-radius: var(--border-radius); 
+            padding: 20px; 
+            position: relative; 
         }
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            position: relative;
+        .header { 
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%); 
+            padding: 12px; 
+            border-radius: var(--border-radius); 
+            text-align: center; 
+            font-size: clamp(1.2em, 3.5vw, 1.6em); 
+            font-weight: 700; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
         }
-        .header {
-            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-            padding: 12px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            font-size: clamp(1.2em, 3.5vw, 1.6em);
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        .connect-section button {
-            padding: 12px;
-            background: var(--primary-color);
-            color: #121212;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: background 0.3s, transform 0.2s;
-            margin-bottom: 10px;
+        .connect-section button { 
+            padding: 12px; 
+            background: var(--primary-color); 
+            color: #121212; 
+            border: none; 
+            border-radius: var(--border-radius); 
+            cursor: pointer; 
+            font-weight: 600; 
+            width: 100%; 
+            transition: background 0.3s, transform 0.2s; 
+            margin-bottom: 10px; 
         }
         .connect-section button:hover { background: var(--secondary-color); transform: translateY(-2px); }
         .connect-section button:disabled { background: #444; color: #777; cursor: not-allowed; }
-        .swap-box {
-            background: var(--input-bg);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            border: 1px solid var(--primary-color);
+        .swap-box { 
+            background: var(--input-bg); 
+            padding: 15px; 
+            border-radius: var(--border-radius); 
+            margin-bottom: 15px; 
+            border: 1px solid var(--primary-color); 
         }
-        .balance-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-            color: var(--primary-color);
+        .balance-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.9em; 
+            margin-bottom: 5px; 
+            color: var(--primary-color); 
         }
-        .token-search {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: var(--card-bg);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid var(--primary-color);
+        .token-search { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px; 
+            background: var(--card-bg); 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--primary-color); 
         }
-        .token-search input {
-            flex: 1;
-            padding: 10px;
-            background: var(--input-bg);
-            border: none;
-            border-radius: 6px;
-            color: var(--text-color);
-            font-size: 1em;
-            margin-right: 10px;
+        .token-search input { 
+            flex: 1; 
+            padding: 10px; 
+            background: var(--input-bg); 
+            border: none; 
+            border-radius: 6px; 
+            color: var(--text-color); 
+            font-size: 1em; 
+            margin-right: 10px; 
         }
         .token-search input::placeholder { color: #666; }
-        .token-search button {
-            padding: 10px;
-            background: var(--primary-color);
-            color: #121212;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s, transform 0.2s;
+        .token-search button { 
+            padding: 10px; 
+            background: var(--primary-color); 
+            color: #121212; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: background 0.3s, transform 0.2s; 
         }
         .token-search button:hover { background: var(--secondary-color); transform: translateY(-2px); }
-        .token-info {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: var(--card-bg);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid var(--primary-color);
+        .token-info { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px; 
+            background: var(--card-bg); 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--primary-color); 
         }
-        .token-info .avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-size: 0.9em;
-            color: var(--primary-color);
+        .token-info .avatar { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-right: 10px; 
+            font-size: 0.9em; 
+            color: var(--primary-color); 
         }
-        .token-info .avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
+        .token-info .avatar img { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
         }
-        .token-info .avatar.text {
-            background: #333;
+        .token-info .avatar.text { 
+            background: #333; 
         }
         .token-info span { font-size: 1em; }
-        input.amount {
-            width: 100%;
-            padding: 12px;
-            background: var(--input-bg);
-            border: 1px solid var(--primary-color);
-            border-radius: 6px;
-            color: var(--text-color);
-            font-size: 1em;
-            text-align: right;
+        input.amount { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--primary-color); 
+            border-radius: 6px; 
+            color: var(--text-color); 
+            font-size: 1em; 
+            text-align: right; 
         }
-        .percentage-buttons {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
+        .percentage-buttons { 
+            display: flex; 
+            gap: 5px; 
+            margin-top: 10px; 
         }
-        .percentage-buttons button {
-            padding: 8px;
-            background: #333;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            color: var(--text-color);
-            flex: 1;
-            font-weight: 600;
-            transition: background 0.3s;
+        .percentage-buttons button { 
+            padding: 8px; 
+            background: #333; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            color: var(--text-color); 
+            flex: 1; 
+            font-weight: 600; 
+            transition: background 0.3s; 
         }
         .percentage-buttons button:hover { background: #3A3A3A; }
-        .switch-button {
-            text-align: center;
-            margin: 15px 0;
+        .switch-button { 
+            text-align: center; 
+            margin: 15px 0; 
         }
-        .switch-button button {
-            padding: 10px;
-            background: var(--primary-color);
-            color: #121212;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s, transform 0.2s;
+        .switch-button button { 
+            padding: 10px; 
+            background: var(--primary-color); 
+            color: #121212; 
+            border: none; 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: background 0.3s, transform 0.2s; 
         }
         .switch-button button:hover { background: var(--secondary-color); transform: translateY(-2px); }
-        .swap-button {
-            padding: 15px;
-            background: var(--primary-color);
-            color: #121212;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: background 0.3s, transform 0.2s;
+        .swap-button { 
+            padding: 15px; 
+            background: var(--primary-color); 
+            color: #121212; 
+            border: none; 
+            border-radius: var(--border-radius); 
+            cursor: pointer; 
+            font-weight: 600; 
+            width: 100%; 
+            transition: background 0.3s, transform 0.2s; 
         }
         .swap-button:disabled { background: #444; color: #777; cursor: not-allowed; }
         .swap-button:hover:not(:disabled), .switch-button button:hover { background: var(--secondary-color); transform: translateY(-2px); }
-        .status {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: var(--primary-color);
-            text-align: center;
+        .status { 
+            margin-top: 10px; 
+            font-size: 0.9em; 
+            color: var(--primary-color); 
+            text-align: center; 
         }
         .status a { color: var(--primary-color); text-decoration: none; }
         .status a:hover { text-decoration: underline; }
-        .slippage-info, .swap-note {
-            font-size: 0.9em;
-            color: var(--primary-color);
-            margin-top: 5px;
-            text-align: left;
+        .slippage-info, .swap-note { 
+            font-size: 0.9em; 
+            color: var(--primary-color); 
+            margin-top: 5px; 
+            text-align: left; 
         }
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #E6E6E6;
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 5px;
+        .spinner { 
+            display: inline-block; 
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid #E6E6E6; 
+            border-top: 2px solid var(--primary-color); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-left: 5px; 
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
         }
-        .jace-section {
-            text-align: center;
-            margin-top: 20px;
+        .jace-section { 
+            text-align: center; 
+            margin-top: 20px; 
         }
-        .jace-section .avatar {
-            width: 60px;
-            height: 60px;
-            background: #333;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 1.5em;
-            color: var(--primary-color);
+        .jace-section .avatar { 
+            width: 60px; 
+            height: 60px; 
+            background: #333; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0 auto 10px; 
+            font-size: 1.5em; 
+            color: var(--primary-color); 
         }
-        .jace-message {
-            font-size: 0.9em;
-            color: var(--secondary-color);
-            font-style: italic;
+        .jace-message { 
+            font-size: 0.9em; 
+            color: var(--secondary-color); 
+            font-style: italic; 
         }
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+        .loading { 
+            opacity: 0.7; 
+            pointer-events: none; 
         }
         @media (max-width: 480px) {
             body { padding: 10px; }
@@ -264,7 +260,7 @@
 <body>
     <div class="container">
         <div class="header">JaceSwap</div>
-        <div class="connect-section">
+        <div class="connect-section" id="connect-section">
             <button id="connectWalletButton" class="button">Connect Wallet</button>
             <p>Wallet: <span id="walletAddress" class="status">Not connected</span></p>
             <div id="networkStatus" class="status">Click to connect...</div>
@@ -289,12 +285,12 @@
         <div class="switch-button">
             <button onclick="switchTokens()">↓↑</button>
         </div>
-        <div class="swap-box">
+        <div class="swap-box" id="toToken">
             <div class="balance-row">
                 <span>To</span>
                 <span id="toBalance">Balance: 0</span>
             </div>
-            <div class="token-search" id="toToken">
+            <div class="token-search">
                 <input type="text" id="toTokenAddress" placeholder="Enter token address">
                 <button id="toSearchButton">Search</button>
             </div>
@@ -305,7 +301,9 @@
             <div class="slippage-info">Default Slippage: 0.5%</div>
             <div class="swap-note" id="swapNote">Amount automatically calculated by JaceSwap</div>
         </div>
-        <button class="swap-button" id="swapButton" onclick="swapTokens()">Swap</button>
+        <div class="swap-section">
+            <button class="swap-button" id="swapButton" onclick="swapTokens()">Swap</button>
+        </div>
         <div class="jace-section">
             <div class="avatar">🟠</div>
             <div class="jace-message" id="jaceMessage">Yo, connect your wallet to dive into JaceSwap, fam!</div>
@@ -397,23 +395,40 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
-            document.getElementById('toSearchButton').addEventListener('click', () => searchToken('to'));
+            console.log("DOM loaded, setting up event listeners");
+            const connectButton = document.getElementById('connectWalletButton');
+            if (connectButton) {
+                connectButton.addEventListener('click', () => {
+                    console.log("Connect Wallet button clicked");
+                    connectWallet();
+                });
+            } else {
+                console.error("Connect Wallet button not found");
+                document.getElementById('networkStatus').innerText = "Error: Connect Wallet button not found.";
+            }
+            document.getElementById('toSearchButton').addEventListener('click', () => {
+                console.log("Search button clicked");
+                searchToken('to');
+            });
             setupWalletListeners();
             if (!window.location.protocol.startsWith('http')) {
+                console.warn("Running on file:// protocol");
                 document.getElementById('networkStatus').innerHTML = 'Please run via a local server (e.g., "npx serve").';
             } else if (!window.ethereum) {
-                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a> or use <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>.';
+                console.warn("No wallet detected");
+                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a> or <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>.';
             }
         });
 
         async function connectWallet() {
+            console.log("Starting wallet connection");
             const section = document.getElementById('connect-section');
             const status = document.getElementById('networkStatus');
             const connectButton = document.getElementById('connectWalletButton');
             const jaceMessage = document.getElementById('jaceMessage');
             try {
                 if (!window.ethereum) {
+                    console.error("No wallet detected");
                     status.innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a> or <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>.';
                     throw new Error("No wallet detected");
                 }
@@ -421,21 +436,29 @@
                 connectButton.disabled = true;
                 status.innerText = "Connecting...";
                 jaceMessage.innerText = getRandomMessage('connectStart');
+                console.log("Initializing Web3");
                 web3 = new Web3(window.ethereum);
+                console.log("Requesting accounts");
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 if (!accounts.length) {
+                    console.error("No accounts found");
                     throw new Error("Please unlock your wallet or connect it.");
                 }
                 account = accounts[0];
+                console.log("Checking chain ID");
                 const chainId = await web3.eth.getChainId();
+                console.log(`Current chain ID: ${chainId}`);
                 if (chainId !== 196) {
+                    console.log("Switching to X Layer (chain ID: 196)");
                     try {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: '0xc4' }]
                         });
                     } catch (switchError) {
+                        console.error("Switch chain error:", switchError);
                         if (switchError.code === 4902) {
+                            console.log("Adding X Layer network");
                             await window.ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [xLayer]
@@ -445,8 +468,10 @@
                         }
                     }
                 }
+                console.log("Initializing contracts");
                 router = new web3.eth.Contract(routerAbi, routerAddress);
                 factory = new web3.eth.Contract(factoryAbi, factoryAddress);
+                console.log("Wallet connected, updating UI");
                 updateUIAfterConnect();
                 await updateBalances();
             } catch (error) {
@@ -461,6 +486,7 @@
             } finally {
                 section.classList.remove('loading');
                 connectButton.disabled = false;
+                console.log("Wallet connection attempt finished");
             }
         }
 
@@ -485,15 +511,15 @@
         }
 
         function setupWalletListeners() {
-            if (!window.ethereum) return;
+            if (!window.ethereum) {
+                console.warn("No wallet for listeners");
+                return;
+            }
             window.ethereum.on('accountsChanged', async (newAccounts) => {
+                console.log("Accounts changed:", newAccounts);
                 if (newAccounts.length) {
                     account = newAccounts[0];
-                    if (web3) {
-                        await connectWallet();
-                    } else {
-                        await connectWallet();
-                    }
+                    await connectWallet();
                 } else {
                     web3 = null;
                     account = null;
@@ -504,6 +530,7 @@
                 }
             });
             window.ethereum.on('chainChanged', async (chainId) => {
+                console.log("Chain changed:", chainId);
                 if (parseInt(chainId, 16) !== 196) {
                     web3 = null;
                     account = null;
@@ -520,6 +547,7 @@
 
         async function updateBalances() {
             if (!web3 || !account) return;
+            console.log("Updating balances for account:", account);
             if (fromToken.isNative) {
                 fromBalance = await web3.eth.getBalance(account);
                 document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
@@ -536,6 +564,7 @@
         }
 
         async function searchToken(type) {
+            console.log("Searching token");
             const section = document.getElementById('toToken');
             const status = document.getElementById('networkStatus');
             const jaceMessage = document.getElementById('jaceMessage');
@@ -581,6 +610,7 @@
                 await updateBalances();
                 await calculateOutput();
             } catch (error) {
+                console.error("Token search error:", error);
                 status.innerText = "Error: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
                 jaceMessage.innerText = getRandomMessage('invalidToken');
             } finally {
@@ -589,6 +619,7 @@
         }
 
         function switchTokens() {
+            console.log("Switching tokens");
             const jaceMessage = document.getElementById('jaceMessage');
             const status = document.getElementById('networkStatus');
             if (!toToken) {
@@ -606,6 +637,7 @@
         }
 
         function setPercentage(percentage) {
+            console.log(`Setting percentage: ${percentage}%`);
             const jaceMessage = document.getElementById('jaceMessage');
             const status = document.getElementById('networkStatus');
             if (!fromBalance || !web3) {
@@ -628,6 +660,7 @@
         }
 
         async function calculateOutput() {
+            console.log("Calculating output");
             const amountIn = document.getElementById('fromAmount').value;
             const swapNote = document.getElementById('swapNote');
             const jaceMessage = document.getElementById('jaceMessage');
@@ -639,6 +672,7 @@
             try {
                 amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
             } catch (error) {
+                console.error("Amount conversion error:", error);
                 swapNote.innerHTML = 'Invalid amount entered.';
                 jaceMessage.innerText = getRandomMessage('swapNoAmount');
                 return;
@@ -647,6 +681,7 @@
             jaceMessage.innerText = getRandomMessage('calcStart');
             try {
                 const path = isFromOKB ? [wethAddress, toToken.address] : [fromToken.address, wethAddress];
+                console.log("Calling getAmountsOut with path:", path);
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
@@ -665,13 +700,14 @@
         }
 
         async function approveToken(tokenAddress, amount) {
+            console.log("Approving token:", tokenAddress);
             if (tokenAddress.toLowerCase() === wethAddress.toLowerCase() && fromToken.isNative) return;
             const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
             const allowance = await tokenContract.methods.allowance(account, routerAddress).call();
             if (web3.utils.toBN(allowance).lt(web3.utils.toBN(amount))) {
                 const swapButton = document.getElementById('swapButton');
                 const jaceMessage = document.getElementById('jaceMessage');
-                const swapSection = document.getElementById('swapButton').parentElement;
+                const swapSection = document.getElementById('swap-section');
                 isApproving = true;
                 swapButton.innerText = "Authorizing...";
                 swapButton.disabled = true;
@@ -684,6 +720,7 @@
                     document.getElementById('networkStatus').innerText = "Token approved";
                     jaceMessage.innerText = "Jace says: Tokens approved, ready to swap!";
                 } catch (error) {
+                    console.error("Approval error:", error);
                     jaceMessage.innerText = getRandomMessage('swapFail');
                     throw error;
                 } finally {
@@ -696,10 +733,11 @@
         }
 
         async function swapTokens() {
+            console.log("Starting swap");
             const jaceMessage = document.getElementById('jaceMessage');
             const status = document.getElementById('networkStatus');
             const swapButton = document.getElementById('swapButton');
-            const swapSection = document.getElementById('swapButton').parentElement;
+            const swapSection = document.getElementById('swap-section');
             if (isApproving) return;
             if (!web3 || !account || !toToken) {
                 status.innerText = "Please connect wallet and select tokens.";
@@ -716,9 +754,9 @@
             try {
                 amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
             } catch (error) {
+                console.error("Amount conversion error:", error);
                 status.innerText = "Invalid amount entered.";
                 jaceMessage.innerText = getRandomMessage('swapNoAmount');
-                console.error("Amount conversion error:", error);
                 return;
             }
             swapSection.classList.add('loading');
@@ -727,6 +765,7 @@
             jaceMessage.innerText = getRandomMessage('swapStart');
             try {
                 const path = isFromOKB ? [wethAddress, toToken.address] : [fromToken.address, wethAddress];
+                console.log("Calling getAmountsOut for swap with path:", path);
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
@@ -762,11 +801,13 @@
                 const amountOutMin = output.mul(slippageFactor).div(web3.utils.toBN(1000));
                 const gasPrice = await web3.eth.getGasPrice();
                 const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
-                const gasLimit = 3000000; // High gas limit from reference code
+                const gasLimit = 3000000;
                 const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+                console.log("Executing swap with path:", path);
+                let tx;
                 if (isFromOKB) {
                     const totalValue = web3.utils.toBN(amountInWei).add(web3.utils.toBN(flatFee));
-                    await router.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(
+                    tx = await router.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(
                         amountOutMin.toString(),
                         path,
                         account,
@@ -774,7 +815,7 @@
                     ).send({ from: account, gasPrice: adjustedGasPrice, gas: gasLimit, value: totalValue });
                 } else {
                     await approveToken(fromToken.address, amountInWei);
-                    await router.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(
+                    tx = await router.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(
                         amountInWei.toString(),
                         amountOutMin.toString(),
                         path,
