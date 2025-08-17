@@ -190,7 +190,7 @@
                 <option value="Token">Token</option>
             </select>
             <input type="text" id="tokenAddress" placeholder="Token Contract Address (e.g., 0x...)" style="display: none;">
-            <textarea id="transferList" placeholder="Enter addresses and amounts (e.g., 0x123...abc,10000\n0x456...def,11000)"></textarea>
+            <textarea id="transferList" placeholder="Enter address,amount per line (e.g.,\n0xfb10e2b3f29931f8372680877f1e4b3a139d9fa3,10000\n0xb82b803105107dd873baa9e61435d4710b531d6b,11000)"></textarea>
             <button id="sendBatch" class="button" disabled>Send Batch Transfer</button>
             <div id="multisendStatus" class="status"></div>
             <table class="token-table">
@@ -212,7 +212,7 @@
                 <li><strong>Connect Your Wallet</strong>: Use MetaMask to connect to X Layer (chain ID: 196). Ensure you have enough <span class="highlight">OKB</span> for gas fees.</li>
                 <li><strong>Select Transfer Type</strong>: Choose <span class="highlight">OKB</span> for mainnet coin or <span class="highlight">Token</span> for ERC20 tokens.</li>
                 <li><strong>Enter Token Address</strong>: Input a valid ERC20 token contract address on X Layer.</li>
-                <li><strong>Input Addresses & Amounts</strong>: Enter one address and amount per line (e.g., <span class="highlight">0x...address,10000</span>). Supports up to 200 addresses.</li>
+                <li><strong>Input Addresses & Amounts</strong>: Enter one address and amount per line (e.g., <span class="highlight">0xfb10e2b3f29931f8372680877f1e4b3a139d9fa3,10000</span>). Supports up to 200 addresses.</li>
                 <li><strong>Send Batch</strong>: Approve tokens if needed, then execute the transfer.</li>
             </ul>
         </div>
@@ -324,7 +324,7 @@
                     try {
                         const code = await web3.eth.getCode(tokenAddress).catch(err => {
                             console.error("getCode failed:", err);
-                            return '0x'; // Fallback
+                            return '0x';
                         });
                         if (code === '0x') {
                             status.textContent = "Error: Token address is not a contract";
@@ -334,7 +334,7 @@
                         const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
                         decimals = await tokenContract.methods.decimals().call().catch(err => {
                             console.error("decimals call failed:", err);
-                            return 18; // Fallback
+                            return 18;
                         });
                         symbol = 'Token';
                         logo = `https://ui-avatars.com/api/?name=T&background=00BFA5&color=121212&size=18`;
@@ -349,13 +349,16 @@
 
             for (const line of lines) {
                 const [address, amountStr] = line.split(',').map(item => item.trim());
+                console.log("Parsing line:", line, "->", { address, amountStr });
                 if (!web3.utils.isAddress(address)) {
                     status.textContent = `Error: Invalid address: ${address}`;
+                    console.log("Invalid address:", address);
                     return null;
                 }
                 const amount = parseFloat(amountStr);
                 if (isNaN(amount) || amount <= 0) {
                     status.textContent = `Error: Invalid amount for address ${address}: ${amountStr}`;
+                    console.log("Invalid amount:", amountStr);
                     return null;
                 }
                 const amountWei = web3.utils.toWei(amountStr, decimals === 18 ? 'ether' : { unit: 'wei', decimals });
@@ -366,6 +369,7 @@
                 totalAmount = totalAmount.add(web3.utils.toBN(amountWei));
             }
             status.textContent = transfers.length > 0 ? `Ready to send to ${transfers.length} addresses` : '';
+            console.log("Parsed transfers:", transfers.length, "totalAmount:", totalAmount.toString());
             return { transfers, totalAmount, decimals };
         }
 
@@ -418,7 +422,7 @@
                         console.log("Approving tokens, required:", totalAmount.toString(), "current:", allowance.toString());
                         const approveGas = await tokenContract.methods.approve(multisendAddress, MAX_UINT256).estimateGas({ from: accounts[0] }).catch(err => {
                             console.error("Gas estimation failed:", err);
-                            return 100000; // Fallback gas
+                            return 100000;
                         });
                         await tokenContract.methods.approve(multisendAddress, MAX_UINT256).send({
                             from: accounts[0],
