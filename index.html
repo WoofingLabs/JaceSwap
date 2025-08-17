@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaceSwap - Swap</title>
+    <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'VT323', monospace;
+            background: #000;
+            color: #0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: clamp(1.8em, 5vw, 2.2em);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #0f0;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .connect-section {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .connect-section button {
+            background: transparent;
+            color: #0f0;
+            padding: 10px 20px;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .connect-section button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+            transform: translateY(-2px);
+        }
+        .status {
+            font-size: 1em;
+            text-align: center;
+            margin: 10px 0;
+            text-shadow: 0 0 5px #0f0;
+        }
+        .swap-box {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .token-search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .token-search input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            background: #111;
+            color: #0f0;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            outline: none;
+        }
+        .token-search input::placeholder { color: #555; }
+        .token-search button {
+            background: transparent;
+            color: #0f0;
+            padding: 10px 20px;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .token-search button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .token-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .token-info img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            border-radius: 50%;
+            border: 1px solid #0f0;
+        }
+        .token-info span { font-size: 1.2em; }
+        input.amount {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            background: #111;
+            color: #0f0;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            text-align: right;
+            outline: none;
+        }
+        .percentage-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .percentage-buttons button {
+            background: transparent;
+            color: #0f0;
+            padding: 8px;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            font-family: 'VT323', monospace;
+            font-size: 1.1em;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        .percentage-buttons button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .switch-button {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .switch-button button {
+            background: transparent;
+            color: #0f0;
+            padding: 10px;
+            border: 2px solid #0f0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .switch-button button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .swap-button {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .swap-button:disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+        }
+        .swap-button:hover:not(:disabled) {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .slippage-info, .swap-note {
+            font-size: 1em;
+            margin-top: 10px;
+            text-shadow: 0 0 5px #0f0;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #0f0;
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 5px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .jace-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .jace-section img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+            border-radius: 50%;
+            border: 1px solid #0f0;
+        }
+        .jace-message {
+            font-size: 1.1em;
+            text-shadow: 0 0 5px #0f0;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.8em; }
+            .token-search { flex-direction: column; }
+            .token-search input, .token-search button { width: 100%; }
+            .percentage-buttons { flex-direction: column; }
+            .jace-section img { width: 50px; height: 50px; }
+            .jace-message { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <div class="container">
+        <div class="header">
+            <h1>> JaceSwap</h1>
+        </div>
+        <div class="connect-section">
+            <button id="connectWalletButton">> Connect Wallet</button>
+            <div id="networkStatus" class="status">> Click to connect...</div>
+        </div>
+        <div class="swap-box">
+            <div class="balance-row">
+                <span>> From</span>
+                <span id="fromBalance">> Balance: 0</span>
+            </div>
+            <div class="token-search">
+                <input type="text" id="fromTokenAddress" placeholder="Enter token address">
+                <button id="fromSearchButton">> Search</button>
+            </div>
+            <div class="token-info" id="fromTokenInfo">
+                <img src="images/bone.png" alt="BONE">
+                <span id="fromTokenSymbol">BONE</span>
+            </div>
+            <input type="number" class="amount" id="fromAmount" placeholder="0.0" step="0.01" oninput="calculateOutput()">
+            <div class="percentage-buttons">
+                <button onclick="setPercentage(25)">> 25%</button>
+                <button onclick="setPercentage(50)">> 50%</button>
+                <button onclick="setPercentage(75)">> 75%</button>
+                <button onclick="setPercentage(100)">> MAX</button>
+            </div>
+        </div>
+        <div class="switch-button">
+            <button onclick="switchTokens()">↓↑</button>
+        </div>
+        <div class="swap-box">
+            <div class="balance-row">
+                <span>> To</span>
+                <span id="toBalance">> Balance: 0</span>
+            </div>
+            <div class="token-search">
+                <input type="text" id="toTokenAddress" placeholder="Enter token address">
+                <button id="toSearchButton">> Search</button>
+            </div>
+            <div class="token-info" id="toTokenInfo">
+                <span>Select a token</span>
+            </div>
+            <div class="slippage-info">> Default Slippage: 0.5%</div>
+            <div class="swap-note" id="swapNote">> Amount automatically calculated by JaceSwap</div>
+        </div>
+        <button class="swap-button" id="swapButton" onclick="swapTokens()">> Swap</button>
+        <div class="jace-section">
+            <img src="https://woofingjace.com/images/jace.png" alt="Jace">
+            <div class="jace-message" id="jaceMessage">> "Yo, connect your wallet to dive into JaceSwap, fam!"</div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script>
+        const boneToken = { address: "0x839FdB6cc98342B428E074C1573ADF6D48CA3bFd", symbol: "BONE", logo: "images/bone.png", isNative: true };
+        const routerAddress = "0x96b16aBD53Bfd765F4CD118590C1d0be8B57DE24";
+        const factoryAddress = "0xB9fbdFA27B7ba8BB2d4bB4aB399e4c55F0F7F83a";
+        const wethAddress = "0x839FdB6cc98342B428E074C1573ADF6D48CA3bFd";
+        const routerAbi = [
+            {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address","name":"tokenFrom","type":"address"},{"internalType":"address","name":"tokenTo","type":"address"},{"internalType":"bool","name":"stable","type":"bool"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokensSimple","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bool","name":"stable","type":"bool"}],"internalType":"struct Router.route[]","name":"routes","type":"tuple[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bool","name":"stable","type":"bool"}],"internalType":"struct Router.route[]","name":"routes","type":"tuple[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"payable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bool","name":"stable","type":"bool"}],"internalType":"struct Router.route[]","name":"routes","type":"tuple[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForETHSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bool","name":"stable","type":"bool"}],"internalType":"struct Router.route[]","name":"routes","type":"tuple[]"}],"name":"getAmountsOut","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"}
+        ];
+        const factoryAbi = [
+            {"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"bool","name":"stable","type":"bool"}],"name":"getPair","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+        ];
+        const pairAbi = [
+            {"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint256","name":"reserve0","type":"uint256"},{"internalType":"uint256","name":"reserve1","type":"uint256"},{"internalType":"uint32","name":"blockTimestampLast","type":"uint32"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"stable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
+        ];
+        const erc20Abi = [
+            {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
+            {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"},
+            {"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"type":"function"},
+            {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"type":"function"},
+            {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"function"}
+        ];
+        const shibarium = {
+            chainId: 109,
+            chainName: 'Shibarium',
+            nativeCurrency: { name: 'BONE', symbol: 'BONE', decimals: 18 },
+            rpcUrls: ['https://rpc.shibrpc.com'],
+            blockExplorerUrls: ['https://shibariumscan.io']
+        };
+        let web3, account, router, factory;
+        let fromToken = boneToken;
+        let toToken = null;
+        let fromBalance = '0';
+        let isFromBone = true;
+        let isApproving = false;
+        const defaultSlippage = 0.005;
+        const maxPriceImpact = 0.5;
+
+        const jaceMessages = {
+            connectStart: ["> Yo, Jace is syncing your wallet, hang tight!", "> Jace is plugging into Shibarium, gimme a sec!", "> Hold up, Jace is linking your wallet, fam!", "> Jace is locking in your wallet, stay sharp!"],
+            connectSuccess: ["> Jace got you connected, let’s swap some tokens!", "> Yo, you’re in with Jace! Time to make moves!", "> Jace linked up, ready to trade like a pro!", "> Connected! Jace is set to dominate the swap game!"],
+            connectFail: ["> Uh-oh, Jace couldn’t link the wallet, try again!", "> Wallet’s playing hide and seek, Jace says retry!", "> Jace hit a snag, reconnect that wallet, fam!", "> Nope, wallet’s offline, Jace needs another shot!"],
+            tokenSearch: ["> Jace is scanning for that token, hold on!", "> Searching the blockchain, Jace’s got this!", "> Jace is digging for your token, one sec!", "> Token hunt is on, Jace is tracking it down!"],
+            selectToken: (symbol) => [`> Jace approves of ${symbol}, solid pick!`, `> ${symbol}? Jace likes your style, let’s trade!`, `> Yo, ${symbol} is the vibe, Jace is ready!`, `> ${symbol} locked in, Jace says it’s go time!`],
+            switchTokens: ["> Jace is flipping the tokens, smooth move!", "> Swapping sides? Jace’s got the switch covered!", "> Jace says flip it, let’s change the game!", "> Token switch? Jace is all over it, fam!"],
+            setPercentage: (percent) => [`> Jace is betting ${percent}%, bold move!`, `> ${percent}%? Jace respects the hustle!`, `> Jace is rolling with ${percent}%, let’s do this!`, `> ${percent}% locked in, Jace is hyped!`],
+            calcStart: ["> Jace is crunching the numbers, hold tight!", "> Calculating the swap, Jace is on it!", "> Jace is working the math, give it a sec!", "> Price check in progress, Jace is computing!"],
+            calcSuccess: (amount, symbol) => [`> Jace scored ${amount} ${symbol}, ready to swap?`, `> Boom, Jace got you ${amount} ${symbol}!`, `> Jace nailed it: ${amount} ${symbol}, let’s trade!`, `> ${amount} ${symbol} locked in, Jace is pumped!`],
+            calcFail: ["> Jace couldn’t find a path, try another pair!", "> Swap route’s a bust, Jace says pick again!", "> No deal here, Jace needs a new token pair!", "> Jace hit a wall, retry with different tokens!"],
+            swapStart: ["> Jace is executing the swap, let’s roll!", "> Swap’s on, Jace is making it happen!", "> Jace is diving into the trade, hold up!", "> Trading time, Jace is running the show!"],
+            swapSuccess: ["> Jace nailed the swap, you’re a legend!", "> Swap complete, Jace says you’re killing it!", "> Jace pulled it off, trade’s a success!", "> Done deal, Jace made it happen, fam!"],
+            swapFail: ["> Swap didn’t go through, Jace says try again!", "> Jace hit a glitch, let’s retry the trade!", "> Trade failed, Jace needs another shot!", "> Something broke, Jace says give it one more go!"],
+            swapNoToken: ["> Jace needs a token to swap, pick one!", "> No token? Jace can’t swap air, fam!", "> Yo, Jace says select a token first!", "> Jace is waiting, choose a token to trade!"],
+            swapNoAmount: ["> Jace needs an amount, enter something!", "> No amount? Jace can’t work with zero!", "> Yo, give Jace a number to swap, fam!", "> Jace says fill in the amount, let’s go!"],
+            highPriceImpact: ["> Jace warns: price impact’s too high, scale it down!", "> Too much impact, Jace says try a smaller amount!", "> Swap’s too big, Jace suggests lowering it!", "> Price impact’s wild, Jace says reduce it!"],
+            insufficientLiquidity: ["> Jace says the pool’s too dry for this swap!", "> Not enough liquidity, Jace needs a smaller trade!", "> Pool’s empty, Jace says try less!", "> Jace can’t swim here, too little liquidity!"],
+            approving: ["> Jace is approving your tokens, one sec!", "> Token approval in progress, Jace’s on it!", "> Jace is setting up the trade, hold tight!", "> Authorizing tokens, Jace is locking it in!"],
+            userDenied: ["> Yo, you bailed on Jace! Approve next time!", "> Jace was ready, but you said no, retry!", "> Denied the trade? Jace says try again!", "> Jace got rejected, let’s do this again!"],
+            invalidToken: ["> Jace says that token’s no good, try another!", "> Invalid address, Jace needs a real token!", "> Jace can’t find that token, check the address!", "> Bad token, Jace says enter a valid one!"]
+        };
+
+        function getRandomMessage(type, param1, param2) {
+            const messages = jaceMessages[type];
+            if (typeof messages === 'function') {
+                const options = messages(param1, param2);
+                return `> ${options[Math.floor(Math.random() * options.length)]}`;
+            }
+            return `> ${messages[Math.floor(Math.random() * messages.length)]}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+            document.getElementById('fromSearchButton').addEventListener('click', () => searchToken('from'));
+            document.getElementById('toSearchButton').addEventListener('click', () => searchToken('to'));
+            setupWalletListeners();
+            if (!window.location.protocol.includes('http')) {
+                document.getElementById('networkStatus').innerText = '> Run via local server (e.g., "npx serve").';
+            }
+        });
+
+        async function connectWallet() {
+            const status = document.getElementById('networkStatus');
+            const connectButton = document.getElementById('connectWalletButton');
+            const jaceMessage = document.getElementById('jaceMessage');
+            try {
+                if (!window.ethereum) {
+                    status.innerText = "> Install MetaMask.";
+                    jaceMessage.innerText = getRandomMessage('connectFail');
+                    throw new Error("No wallet detected");
+                }
+                connectButton.disabled = true;
+                status.innerText = "> Connecting...";
+                jaceMessage.innerText = getRandomMessage('connectStart');
+                web3 = new Web3(window.ethereum);
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (!accounts.length) throw new Error("Unlock wallet.");
+                account = accounts[0];
+                await switchToShibarium();
+                router = new web3.eth.Contract(routerAbi, routerAddress);
+                factory = new web3.eth.Contract(factoryAbi, factoryAddress);
+                updateUIAfterConnect();
+                await updateBalances();
+            } catch (error) {
+                status.innerText = "> Error: " + error.message;
+                jaceMessage.innerText = getRandomMessage('connectFail');
+                console.error(error);
+                resetUI();
+            } finally {
+                connectButton.disabled = false;
+            }
+        }
+
+        async function switchToShibarium() {
+            const chainId = await web3.eth.getChainId();
+            if (Number(chainId) !== 109) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: "0x6d" }]
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [shibarium]
+                        });
+                    } else {
+                        throw switchError;
+                    }
+                }
+            }
+        }
+
+        function updateUIAfterConnect() {
+            const connectButton = document.getElementById('connectWalletButton');
+            const status = document.getElementById('networkStatus');
+            const jaceMessage = document.getElementById('jaceMessage');
+            connectButton.textContent = `> Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
+            status.innerText = "> Connected to Shibarium";
+            jaceMessage.innerText = getRandomMessage('connectSuccess');
+        }
+
+        function resetUI() {
+            const connectButton = document.getElementById('connectWalletButton');
+            const status = document.getElementById('networkStatus');
+            connectButton.textContent = "> Connect Wallet";
+            status.innerText = "> Click to connect...";
+        }
+
+        function setupWalletListeners() {
+            if (!window.ethereum) return;
+            window.ethereum.on('accountsChanged', async (newAccounts) => {
+                if (newAccounts.length) {
+                    account = newAccounts[0];
+                    if (web3) {
+                        await switchToShibarium();
+                        router = new web3.eth.Contract(routerAbi, routerAddress);
+                        factory = new web3.eth.Contract(factoryAbi, factoryAddress);
+                        updateUIAfterConnect();
+                        await updateBalances();
+                    } else {
+                        await connectWallet();
+                    }
+                } else {
+                    web3 = null;
+                    account = null;
+                    router = null;
+                    factory = null;
+                    resetUI();
+                    document.getElementById('jaceMessage').innerText = getRandomMessage('connectFail');
+                }
+            });
+            window.ethereum.on('chainChanged', async (chainId) => {
+                if (parseInt(chainId, 16) !== 109) {
+                    web3 = null;
+                    account = null;
+                    router = null;
+                    factory = null;
+                    resetUI();
+                    document.getElementById('networkStatus').innerText = "> Wrong network. Reconnect to Shibarium.";
+                    document.getElementById('jaceMessage').innerText = "> Jace says: Wrong chain, fam! Switch to Shibarium!";
+                } else if (account) {
+                    await connectWallet();
+                }
+            });
+        }
+
+        async function updateBalances() {
+            if (!web3 || !account) return;
+            if (fromToken.isNative) {
+                fromBalance = await web3.eth.getBalance(account);
+                document.getElementById('fromBalance').innerText = `> Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+            } else {
+                const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
+                fromBalance = await tokenContract.methods.balanceOf(account).call();
+                document.getElementById('fromBalance').innerText = `> Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+            }
+            if (toToken) {
+                let toBalance;
+                if (toToken.isNative) {
+                    toBalance = await web3.eth.getBalance(account);
+                } else {
+                    const toTokenContract = new web3.eth.Contract(erc20Abi, toToken.address);
+                    toBalance = await toTokenContract.methods.balanceOf(account).call();
+                }
+                document.getElementById('toBalance').innerText = `> Balance: ${web3.utils.fromWei(toBalance, 'ether')}`;
+            }
+        }
+
+        async function searchToken(type) {
+            const status = document.getElementById('networkStatus');
+            const jaceMessage = document.getElementById('jaceMessage');
+            const tokenAddressInput = document.getElementById(`${type}TokenAddress`);
+            const tokenAddress = tokenAddressInput.value.trim();
+            if (!web3.utils.isAddress(tokenAddress)) {
+                status.innerText = "> Invalid address!";
+                jaceMessage.innerText = getRandomMessage('invalidToken');
+                return;
+            }
+            status.innerText = "> Searching token...";
+            jaceMessage.innerText = getRandomMessage('tokenSearch');
+            try {
+                const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
+                let symbol, name;
+                try {
+                    symbol = await tokenContract.methods.symbol().call();
+                    name = await tokenContract.methods.name().call();
+                } catch (error) {
+                    throw new Error("Failed to fetch token: " + error.message);
+                }
+                const token = { address: tokenAddress, symbol, logo: "https://woofingjace.com/images/jace.png", isNative: tokenAddress === wethAddress };
+                if (type === 'from') {
+                    fromToken = token;
+                    document.getElementById('fromTokenInfo').innerHTML = `<img src="${token.logo}" alt="${symbol}"><span id="fromTokenSymbol">${symbol}</span>`;
+                    isFromBone = token.isNative;
+                } else {
+                    toToken = token;
+                    document.getElementById('toTokenInfo').innerHTML = `<img src="${token.logo}" alt="${symbol}"><span>${symbol}</span>`;
+                    if (isFromBone) {
+                        fromToken = boneToken;
+                    } else {
+                        fromToken = token;
+                        toToken = boneToken;
+                        document.getElementById('fromTokenInfo').innerHTML = `<img src="${fromToken.logo}" alt="${fromToken.symbol}"><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
+                    }
+                }
+                tokenAddressInput.value = '';
+                status.innerText = "";
+                jaceMessage.innerText = getRandomMessage('selectToken', symbol);
+                await updateBalances();
+                calculateOutput();
+            } catch (error) {
+                status.innerText = "> Error: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
+                jaceMessage.innerText = getRandomMessage('invalidToken');
+            }
+        }
+
+        function switchTokens() {
+            const jaceMessage = document.getElementById('jaceMessage');
+            const status = document.getElementById('networkStatus');
+            if (!toToken) {
+                status.innerText = "> Please select a token to swap to.";
+                jaceMessage.innerText = getRandomMessage('swapNoToken');
+                return;
+            }
+            isFromBone = !isFromBone;
+            [fromToken, toToken] = [toToken, fromToken];
+            document.getElementById('fromTokenInfo').innerHTML = `<img src="${fromToken.logo}" alt="${fromToken.symbol}"><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
+            document.getElementById('toTokenInfo').innerHTML = `<img src="${toToken.logo}" alt="${toToken.symbol}"><span>${toToken.symbol}</span>`;
+            jaceMessage.innerText = getRandomMessage('switchTokens');
+            updateBalances();
+            calculateOutput();
+        }
+
+        function setPercentage(percentage) {
+            const jaceMessage = document.getElementById('jaceMessage');
+            const status = document.getElementById('networkStatus');
+            if (!fromBalance || !web3) {
+                status.innerText = "> Please connect wallet first.";
+                jaceMessage.innerText = getRandomMessage('connectFail');
+                return;
+            }
+            let amount;
+            if (percentage === 100) {
+                amount = web3.utils.fromWei(fromBalance, 'ether');
+            } else {
+                amount = web3.utils.fromWei(fromBalance, 'ether') * (percentage / 100);
+            }
+            if (percentage === 100 && fromToken.isNative) {
+                amount = Math.max(0, amount - 0.01);
+            }
+            document.getElementById('fromAmount').value = amount.toString();
+            jaceMessage.innerText = getRandomMessage('setPercentage', percentage);
+            calculateOutput();
+        }
+
+        async function calculateOutput() {
+            const amountIn = document.getElementById('fromAmount').value;
+            const swapNote = document.getElementById('swapNote');
+            const jaceMessage = document.getElementById('jaceMessage');
+            if (!web3 || !account || !toToken || !amountIn || amountIn <= 0) {
+                swapNote.innerHTML = '> Amount automatically calculated by JaceSwap';
+                return;
+            }
+            let amountInWei;
+            try {
+                amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
+            } catch (error) {
+                swapNote.innerHTML = '> Invalid amount entered.';
+                jaceMessage.innerText = getRandomMessage('swapNoAmount');
+                return;
+            }
+            swapNote.innerHTML = '> Estimated output: <span class="spinner"></span>';
+            jaceMessage.innerText = getRandomMessage('calcStart');
+            try {
+                let bestOutput = web3.utils.toBN('0');
+                for (const stable of [true, false]) {
+                    const pairAddress = await factory.methods.getPair(fromToken.address, toToken.address, stable).call();
+                    if (pairAddress !== '0x0000000000000000000000000000000000000000') {
+                        const routes = [{ from: fromToken.address, to: toToken.address, stable }];
+                        const amounts = await router.methods.getAmountsOut(amountInWei, routes).call();
+                        const output = web3.utils.toBN(amounts[amounts.length - 1]);
+                        if (output.gt(bestOutput)) {
+                            bestOutput = output;
+                        }
+                    }
+                }
+                if (bestOutput.eq(web3.utils.toBN('0'))) {
+                    swapNote.innerHTML = '> No valid trading pair found.';
+                    jaceMessage.innerText = getRandomMessage('calcFail');
+                    return;
+                }
+                const outputEther = parseFloat(web3.utils.fromWei(bestOutput, 'ether'));
+                swapNote.innerHTML = `> Estimated output: ${outputEther.toFixed(6)} ${toToken.symbol}`;
+                jaceMessage.innerText = getRandomMessage('calcSuccess', outputEther.toFixed(2), toToken.symbol);
+            } catch (error) {
+                console.error("Error calculating output:", error);
+                swapNote.innerHTML = '> Error calculating output.';
+                jaceMessage.innerText = getRandomMessage('calcFail');
+            }
+        }
+
+        async function approveToken(tokenAddress, amount) {
+            if (tokenAddress === wethAddress && fromToken.isNative) return;
+            const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
+            const allowance = await tokenContract.methods.allowance(account, routerAddress).call();
+            if (web3.utils.toBN(allowance).lt(web3.utils.toBN(amount))) {
+                const swapButton = document.getElementById('swapButton');
+                const jaceMessage = document.getElementById('jaceMessage');
+                isApproving = true;
+                swapButton.textContent = "> Authorizing...";
+                swapButton.disabled = true;
+                jaceMessage.innerText = getRandomMessage('approving');
+                await tokenContract.methods.approve(routerAddress, amount).send({ from: account });
+                document.getElementById('networkStatus').innerText = "> Token approved";
+                isApproving = false;
+                swapButton.textContent = "> Swap";
+                swapButton.disabled = false;
+                jaceMessage.innerText = "> Jace says: Tokens approved, ready to swap!";
+            }
+        }
+
+        async function swapTokens() {
+            const jaceMessage = document.getElementById('jaceMessage');
+            const status = document.getElementById('networkStatus');
+            const swapButton = document.getElementById('swapButton');
+            if (isApproving) return;
+            if (!web3 || !account || !toToken) {
+                status.innerText = "> Please connect wallet and select tokens.";
+                jaceMessage.innerText = getRandomMessage('swapNoToken');
+                return;
+            }
+            const amountIn = document.getElementById('fromAmount').value;
+            if (!amountIn || amountIn <= 0) {
+                status.innerText = "> Please enter a valid amount.";
+                jaceMessage.innerText = getRandomMessage('swapNoAmount');
+                return;
+            }
+            let amountInWei;
+            try {
+                amountInWei = web3.utils.toBN(web3.utils.toWei(amountIn, 'ether'));
+            } catch (error) {
+                status.innerText = "> Invalid amount entered.";
+                jaceMessage.innerText = getRandomMessage('swapNoAmount');
+                console.error("Amount conversion error:", error);
+                return;
+            }
+            if (!fromToken.isNative) {
+                const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
+                const tokenBalance = await tokenContract.methods.balanceOf(account).call();
+                if (web3.utils.toBN(tokenBalance).lt(amountInWei)) {
+                    status.innerText = "> Insufficient token balance.";
+                    jaceMessage.innerText = "> Jace says: Not enough tokens to swap, fam!";
+                    return;
+                }
+            }
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+            let bestStable = false;
+            let bestOutput = web3.utils.toBN('0');
+            let routes;
+            try {
+                for (const stable of [true, false]) {
+                    const pairAddress = await factory.methods.getPair(fromToken.address, toToken.address, stable).call();
+                    if (pairAddress !== '0x0000000000000000000000000000000000000000') {
+                        const tempRoutes = [{ from: fromToken.address, to: toToken.address, stable }];
+                        const amounts = await router.methods.getAmountsOut(amountInWei, tempRoutes).call();
+                        const output = web3.utils.toBN(amounts[amounts.length - 1]);
+                        if (output.gt(bestOutput)) {
+                            bestOutput = output;
+                            bestStable = stable;
+                            routes = tempRoutes;
+                        }
+                    }
+                }
+                if (bestOutput.eq(web3.utils.toBN('0')) || !routes) {
+                    status.innerText = "> No valid trading pair found.";
+                    jaceMessage.innerText = getRandomMessage('calcFail');
+                    return;
+                }
+                const pairAddress = await factory.methods.getPair(fromToken.address, toToken.address, bestStable).call();
+                const pairContract = new web3.eth.Contract(pairAbi, pairAddress);
+                const reserves = await pairContract.methods.getReserves().call();
+                const token0 = await pairContract.methods.token0().call();
+                const reserveFrom = token0 === fromToken.address ? reserves.reserve0 : reserves.reserve1;
+                const reserveTo = token0 === fromToken.address ? reserves.reserve1 : reserves.reserve0;
+                const reserveFromBN = web3.utils.toBN(reserveFrom);
+                const reserveToBN = web3.utils.toBN(reserveTo);
+                const priceImpact = amountInWei.mul(web3.utils.toBN(100)).div(reserveFromBN.add(amountInWei));
+                if (priceImpact.gt(web3.utils.toBN(maxPriceImpact * 100))) {
+                    status.innerText = `> Price impact too high (${priceImpact.toString()}%).`;
+                    jaceMessage.innerText = getRandomMessage('highPriceImpact');
+                    return;
+                }
+                if (bestOutput.gt(reserveToBN)) {
+                    status.innerText = `> Insufficient liquidity in pool.`;
+                    jaceMessage.innerText = getRandomMessage('insufficientLiquidity');
+                    return;
+                }
+                const slippageFactor = web3.utils.toBN(1000 - defaultSlippage * 1000);
+                const amountOutMin = bestOutput.mul(slippageFactor).div(web3.utils.toBN(1000));
+                swapButton.disabled = true;
+                status.innerText = "> Processing swap...";
+                jaceMessage.innerText = getRandomMessage('swapStart');
+                if (!fromToken.isNative) {
+                    await approveToken(fromToken.address, amountInWei);
+                }
+                if (fromToken.isNative) {
+                    await router.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(
+                        amountOutMin.toString(),
+                        routes,
+                        account,
+                        deadline
+                    ).send({ from: account, value: amountInWei });
+                } else {
+                    await router.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(
+                        amountInWei.toString(),
+                        amountOutMin.toString(),
+                        routes,
+                        account,
+                        deadline
+                    ).send({ from: account });
+                }
+                status.innerText = "> Swap successful!";
+                jaceMessage.innerText = getRandomMessage('swapSuccess');
+                document.getElementById('fromAmount').value = '';
+                await updateBalances();
+            } catch (error) {
+                console.error("Swap failed:", error);
+                let errorMessage = error.message || "Unknown error";
+                if (error.message.includes("User denied transaction signature")) {
+                    errorMessage = "> User denied transaction signature.";
+                    jaceMessage.innerText = getRandomMessage('userDenied');
+                } else if (error.message.includes("INSUFFICIENT_OUTPUT_AMOUNT") || error.message.includes("EXCESSIVE_INPUT_AMOUNT")) {
+                    errorMessage = "> Swap failed: Price impact or slippage too high.";
+                    jaceMessage.innerText = "> Jace says: Swap failed—too much price impact or slippage.";
+                } else if (error.message.includes("INSUFFICIENT_LIQUIDITY")) {
+                    errorMessage = "> Swap failed: Insufficient liquidity in the pool.";
+                    jaceMessage.innerText = getRandomMessage('insufficientLiquidity');
+                } else {
+                    jaceMessage.innerText = getRandomMessage('swapFail');
+                }
+                status.innerText = errorMessage;
+            } finally {
+                swapButton.disabled = false;
+            }
+        }
+
+        // Matrix background
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px VT323';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+    </script>
+</body>
+</html>
