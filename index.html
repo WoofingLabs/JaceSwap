@@ -318,6 +318,7 @@
 
         async function connectWallet() {
             const status = document.getElementById('networkStatus');
+            const sendButton = document.getElementById('sendBatch');
             try {
                 if (!window.ethereum) {
                     status.innerHTML = 'No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
@@ -356,10 +357,12 @@
                 document.getElementById('walletAddress').innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 multisendContract = new web3.eth.Contract(multisendABI, multisendAddress);
                 status.innerText = "Connected to X Layer";
-                document.getElementById('sendBatch').disabled = false; // Enable button after connection
+                sendButton.disabled = false; // Enable button after successful connection
+                console.log("Wallet connected:", accounts[0]);
             } catch (error) {
-                console.error(error);
+                console.error("Connect wallet error:", error);
                 status.innerText = "Failed to connect: " + error.message;
+                sendButton.disabled = true;
             }
         }
 
@@ -367,7 +370,6 @@
             const transferType = document.getElementById('transferType').value;
             const tokenAddressInput = document.getElementById('tokenAddress');
             tokenAddressInput.style.display = transferType === 'Token' ? 'block' : 'none';
-            document.getElementById('transferPreview').innerHTML = '';
             parseTransferList(); // Update preview on type change
         }
 
@@ -401,6 +403,7 @@
                     decimals = await tokenContract.methods.decimals().call();
                     logo = `https://ui-avatars.com/api/?name=${symbol[0]}&background=00BFA5&color=121212&size=24`;
                 } catch (error) {
+                    console.error("Token details error:", error);
                     alert("Failed to fetch token details: " + error.message);
                     return null;
                 }
@@ -437,16 +440,22 @@
             const status = document.getElementById('multisendStatus');
             const sendButton = document.getElementById('sendBatch');
 
-            if (!accounts || !web3) {
+            console.log("Send Batch Transfer clicked"); // Debug log
+            if (!web3 || !accounts) {
                 alert("Please connect your wallet first!");
+                status.innerText = "Wallet not connected.";
                 return;
             }
 
             const parsed = await parseTransferList();
-            if (!parsed) return;
+            if (!parsed) {
+                status.innerText = "Invalid transfer list.";
+                return;
+            }
             const { transfers, totalAmount, symbol, decimals } = parsed;
             if (transfers.length === 0) {
                 alert("No valid transfers provided!");
+                status.innerText = "No transfers to process.";
                 return;
             }
 
@@ -454,6 +463,8 @@
                 section.classList.add('loading');
                 sendButton.disabled = true;
                 status.innerText = "Preparing transaction...";
+                console.log("Processing transfers:", transfers);
+
                 const gasPrice = await web3.eth.getGasPrice();
                 const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
                 const transferType = document.getElementById('transferType').value;
@@ -464,33 +475,48 @@
                     const tokenAddress = document.getElementById('tokenAddress').value.trim();
                     const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
 
-                    // Check current allowance
                     status.innerText = "Checking token allowance...";
+                    console.log("Checking allowance for token:", tokenAddress);
                     const currentAllowance = await tokenContract.methods.allowance(accounts[0], multisendAddress).call();
                     if (web3.utils.toBN(currentAllowance).lt(totalAmount)) {
                         status.innerText = "Approving max token spend...";
-                        await tokenContract.methods.approve(multisendAddress, MAX_UINT256).send({
+                        console.log("Approving max token amount:", MAX_UINT256);
+                        const approveTx = await tokenContract.methods.approve(multisendAddress, MAX_UINT256).send({
                             from: accounts[0],
                             gas: '100000',
                             gasPrice: adjustedGasPrice
                         });
+                        console.log("Approval transaction:", approveTx.transactionHash);
                         status.innerText = "Approval successful. Sending token batch transfer...";
                     } else {
                         status.innerText = "Sufficient allowance found. Sending token batch transfer...";
+                        console.log("Sufficient allowance:", currentAllowance);
                     }
 
+                    status.innerText = "Estimating gas for token transfer...";
                     const gasEstimate = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts)
-                        .estimateGas({ from: accounts[0] });
+                        .estimateGas({ from: accounts[0] }).catch(err => {
+                            console.error("Gas estimation error (token):", err);
+                            throw new Error("Gas estimation failed for token transfer.");
+                        });
+                    status.innerText = "Sending token batch transfer...";
+                    console.log("Sending token batch transfer with gas:", gasEstimate);
                     const tx = await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({
                         from: accounts[0],
                         gas: Math.floor(gasEstimate * 1.2).toString(),
                         gasPrice: adjustedGasPrice
                     });
                     status.innerHTML = `Batch transfer successful! <a href="${xLayer.explorerUrl}/tx/${tx.transactionHash}" target="_blank">View on Explorer</a>`;
+                    console.log("Token transfer successful:", tx.transactionHash);
                 } else {
-                    status.innerText = "Sending OKB batch transfer...";
+                    status.innerText = "Estimating gas for OKB transfer...";
                     const gasEstimate = await multisendContract.methods.multisendEth(targets, amounts)
-                        .estimateGas({ from: accounts[0], value: totalAmount });
+                        .estimateGas({ from: accounts[0], value: totalAmount }).catch(err => {
+                            console.error("Gas estimation error (OKB):", err);
+                            throw new Error("Gas estimation failed for OKB transfer.");
+                        });
+                    status.innerText = "Sending OKB batch transfer...";
+                    console.log("Sending OKB batch transfer with gas:", gasEstimate);
                     const tx = await multisendContract.methods.multisendEth(targets, amounts).send({
                         from: accounts[0],
                         value: totalAmount,
@@ -498,15 +524,17 @@
                         gasPrice: adjustedGasPrice
                     });
                     status.innerHTML = `Batch transfer successful! <a href="${xLayer.explorerUrl}/tx/${tx.transactionHash}" target="_blank">View on Explorer</a>`;
+                    console.log("OKB transfer successful:", tx.transactionHash);
                 }
                 document.getElementById('transferList').value = '';
                 document.getElementById('transferPreview').innerHTML = '';
             } catch (error) {
-                console.error(error);
+                console.error("Batch transfer error:", error);
                 status.innerText = "Failed to send batch transfer: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() || 'Unknown reason' : error.message);
             } finally {
                 section.classList.remove('loading');
                 sendButton.disabled = false;
+                console.log("Button re-enabled");
             }
         }
 
@@ -520,15 +548,21 @@
         }
 
         document.getElementById('connectButton').addEventListener('click', connectWallet);
-        document.getElementById('sendBatch').addEventListener('click', sendBatchTransfer);
+        document.getElementById('sendBatch').addEventListener('click', () => {
+            console.log("Send Batch button clicked"); // Debug log to confirm click
+            sendBatchTransfer();
+        });
         document.getElementById('transferList').addEventListener('input', parseTransferList);
 
         window.addEventListener('load', () => {
-            document.getElementById('sendBatch').disabled = true; // Disable button until wallet is connected
+            const sendButton = document.getElementById('sendBatch');
+            sendButton.disabled = true; // Disable button until wallet is connected
+            console.log("Page loaded, send button disabled initially");
             if (!window.location.protocol.startsWith('http')) {
                 document.getElementById('networkStatus').innerHTML = 'Please run this page via a local server (e.g., "npx serve") to connect MetaMask.';
             } else if (!window.ethereum) {
                 document.getElementById('networkStatus').innerHTML = 'No wallet detected. Please install <a href="https://metamask.io">MetaMask</a>.';
+                sendButton.disabled = true;
             }
         });
     </script>
