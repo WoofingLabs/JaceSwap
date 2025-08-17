@@ -116,7 +116,6 @@
         .token-info .avatar {
             width: 24px;
             height: 24px;
-            background: #4a4f7a;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -124,6 +123,14 @@
             margin-right: 10px;
             font-size: 0.9em;
             color: #ff9100;
+        }
+        .token-info .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .token-info .avatar.text {
+            background: #4a4f7a;
         }
         .token-info span { font-size: 1em; }
         input.amount {
@@ -256,8 +263,8 @@
                 <span id="fromBalance">Balance: 0</span>
             </div>
             <div class="token-info" id="fromTokenInfo">
-                <div class="avatar">🟠</div>
-                <span id="fromTokenSymbol">WOKB</span>
+                <div class="avatar"><img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="OKB"></div>
+                <span id="fromTokenSymbol">OKB</span>
             </div>
             <input type="number" class="amount" id="fromAmount" placeholder="0.0" step="0.01" oninput="calculateOutput()">
             <div class="percentage-buttons">
@@ -280,7 +287,7 @@
                 <button id="toSearchButton">Search</button>
             </div>
             <div class="token-info" id="toTokenInfo">
-                <div class="avatar">?</div>
+                <div class="avatar text">?</div>
                 <span>Select a token</span>
             </div>
             <div class="slippage-info">Default Slippage: 0.5%</div>
@@ -294,16 +301,16 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        const wokbToken = { 
-            address: "0xe538905cf8410324e03A5A23C1c177a474D59b2b", 
-            symbol: "WOKB", 
-            avatar: "🟠", 
-            isNative: false 
+        const okbToken = { 
+            address: "0xe538905cf8410324e03A5A23C1c177a474D59b2b", // WOKB address for pair interactions
+            symbol: "OKB", 
+            avatar: '<img src="https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png" alt="OKB">', 
+            isNative: true 
         };
         const routerAddress = "0xc850D2Ae73Cb81E2B74341534094BCcb4a366c24";
         const factoryAddress = "0x65669BB56EcF7A8420e833c23f5d20502F8efB39";
         const wethAddress = "0xe538905cf8410324e03A5A23C1c177a474D59b2b"; // WOKB
-        const flatFee = web3.utils.toWei("0.001", "ether"); // 0.001 BONE (used as flat fee in JaceSwap_Pair)
+        const flatFee = web3.utils.toWei("0.001", "ether"); // 0.001 BONE
         const routerAbi = [
             {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},
@@ -333,14 +340,14 @@
             chainId: 196,
             chainName: 'X Layer mainnet',
             nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
-            rpcUrls: ['https://rpc.xlayer.tech'],
+            rpcUrls: ['https://rpc.xlayer.tech', 'https://xlayerrpc.com'],
             blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
         };
         let web3, account, router, factory;
-        let fromToken = wokbToken;
+        let fromToken = okbToken;
         let toToken = null;
         let fromBalance = '0';
-        let isFromWOKB = true;
+        let isFromOKB = true;
         let isApproving = false;
         const defaultSlippage = 0.005;
         const maxPriceImpact = 0.5;
@@ -384,7 +391,7 @@
             if (!window.location.protocol.startsWith('http')) {
                 document.getElementById('networkStatus').innerText = 'Please run via a local server (e.g., "npx serve").';
             } else if (!window.ethereum) {
-                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
+                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Install <a href="https://metamask.io" target="_blank">MetaMask</a> or use OKX Wallet.';
             }
         });
 
@@ -393,7 +400,7 @@
             const connectButton = document.getElementById('connectWalletButton');
             const jaceMessage = document.getElementById('jaceMessage');
             try {
-                if (!window.ethereum) throw new Error("No wallet detected. Please install MetaMask or another wallet.");
+                if (!window.ethereum) throw new Error("No wallet detected. Please install MetaMask or OKX Wallet.");
                 connectButton.disabled = true;
                 status.innerText = "Connecting...";
                 jaceMessage.innerText = getRandomMessage('connectStart');
@@ -409,31 +416,40 @@
             } catch (error) {
                 status.innerText = "Failed: " + error.message;
                 jaceMessage.innerText = getRandomMessage('connectFail');
-                console.error(error);
+                console.error("Wallet connection error:", error);
                 resetUI();
+                if (error.code === -32002) {
+                    status.innerText = "Wallet request pending. Check your wallet extension.";
+                } else if (error.message.includes("network")) {
+                    status.innerText = "Network error. Try switching to X Layer manually.";
+                }
             } finally {
                 connectButton.disabled = false;
             }
         }
 
         async function switchToXLayer() {
-            const chainId = await web3.eth.getChainId();
-            if (Number(chainId) !== 196) {
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: "0xc4" }]
-                    });
-                } catch (switchError) {
-                    if (switchError.code === 4902) {
+            try {
+                const chainId = await web3.eth.getChainId();
+                if (Number(chainId) !== 196) {
+                    try {
                         await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [xLayer]
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: "0xc4" }]
                         });
-                    } else {
-                        throw switchError;
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [xLayer]
+                            });
+                        } else {
+                            throw switchError;
+                        }
                     }
                 }
+            } catch (error) {
+                throw new Error("Failed to switch to X Layer: " + error.message);
             }
         }
 
@@ -493,9 +509,14 @@
 
         async function updateBalances() {
             if (!web3 || !account) return;
-            const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
-            fromBalance = await tokenContract.methods.balanceOf(account).call();
-            document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+            if (fromToken.isNative) {
+                fromBalance = await web3.eth.getBalance(account);
+                document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+            } else {
+                const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
+                fromBalance = await tokenContract.methods.balanceOf(account).call();
+                document.getElementById('fromBalance').innerText = `Balance: ${web3.utils.fromWei(fromBalance, 'ether')}`;
+            }
             if (toToken) {
                 const toTokenContract = new web3.eth.Contract(erc20Abi, toToken.address);
                 const toBalance = await toTokenContract.methods.balanceOf(account).call();
@@ -527,25 +548,25 @@
                 const token = { 
                     address: tokenAddress, 
                     symbol, 
-                    avatar: "🔘", 
-                    isNative: tokenAddress.toLowerCase() === wethAddress.toLowerCase()
+                    avatar: '<div class="text">🔘</div>', 
+                    isNative: false 
                 };
                 if (type === 'to') {
                     toToken = token;
-                    document.getElementById('toTokenInfo').innerHTML = `<div class="avatar">${token.avatar}</div><span>${symbol}</span>`;
-                    if (isFromWOKB) {
-                        fromToken = wokbToken;
+                    document.getElementById('toTokenInfo').innerHTML = `<div class="avatar text">🔘</div><span>${symbol}</span>`;
+                    if (isFromOKB) {
+                        fromToken = okbToken;
                     } else {
                         fromToken = token;
-                        toToken = wokbToken;
-                        document.getElementById('fromTokenInfo').innerHTML = `<div class="avatar">${fromToken.avatar}</div><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
+                        toToken = okbToken;
+                        document.getElementById('fromTokenInfo').innerHTML = `<div class="avatar">${okbToken.avatar}</div><span id="fromTokenSymbol">${okbToken.symbol}</span>`;
                     }
                 }
                 tokenAddressInput.value = '';
                 status.innerText = "";
                 jaceMessage.innerText = getRandomMessage('selectToken', symbol);
                 await updateBalances();
-                calculateOutput();
+                await calculateOutput();
             } catch (error) {
                 status.innerText = "Error: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
                 jaceMessage.innerText = getRandomMessage('invalidToken');
@@ -560,7 +581,7 @@
                 jaceMessage.innerText = getRandomMessage('swapNoToken');
                 return;
             }
-            isFromWOKB = !isFromWOKB;
+            isFromOKB = !isFromOKB;
             [fromToken, toToken] = [toToken, fromToken];
             document.getElementById('fromTokenInfo').innerHTML = `<div class="avatar">${fromToken.avatar}</div><span id="fromTokenSymbol">${fromToken.symbol}</span>`;
             document.getElementById('toTokenInfo').innerHTML = `<div class="avatar">${toToken.avatar}</div><span>${toToken.symbol}</span>`;
@@ -577,7 +598,15 @@
                 jaceMessage.innerText = getRandomMessage('connectFail');
                 return;
             }
-            let amount = web3.utils.fromWei(fromBalance, 'ether') * (percentage / 100);
+            let amount;
+            if (percentage === 100) {
+                amount = web3.utils.fromWei(fromBalance, 'ether');
+            } else {
+                amount = web3.utils.fromWei(fromBalance, 'ether') * (percentage / 100);
+            }
+            if (percentage === 100 && fromToken.isNative) {
+                amount = Math.max(0, amount - 0.01); // Reserve some OKB for gas
+            }
             document.getElementById('fromAmount').value = amount.toString();
             jaceMessage.innerText = getRandomMessage('setPercentage', percentage);
             calculateOutput();
@@ -602,7 +631,7 @@
             swapNote.innerHTML = `Estimated output: <span class="spinner"></span>`;
             jaceMessage.innerText = getRandomMessage('calcStart');
             try {
-                const path = [fromToken.address, toToken.address];
+                const path = isFromOKB ? [wethAddress, toToken.address] : [fromToken.address, wethAddress];
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
@@ -631,12 +660,18 @@
                 swapButton.textContent = "Authorizing...";
                 swapButton.disabled = true;
                 jaceMessage.innerText = getRandomMessage('approving');
-                await tokenContract.methods.approve(routerAddress, amount).send({ from: account });
-                document.getElementById('networkStatus').innerText = "Token approved";
-                isApproving = false;
-                swapButton.textContent = "Swap";
-                swapButton.disabled = false;
-                jaceMessage.innerText = "Jace says: Tokens approved, ready to swap!";
+                try {
+                    await tokenContract.methods.approve(routerAddress, amount).send({ from: account });
+                    document.getElementById('networkStatus').innerText = "Token approved";
+                    jaceMessage.innerText = "Jace says: Tokens approved, ready to swap!";
+                } catch (error) {
+                    jaceMessage.innerText = getRandomMessage('swapFail');
+                    throw error;
+                } finally {
+                    isApproving = false;
+                    swapButton.textContent = "Swap";
+                    swapButton.disabled = false;
+                }
             }
         }
 
@@ -665,16 +700,9 @@
                 console.error("Amount conversion error:", error);
                 return;
             }
-            const tokenContract = new web3.eth.Contract(erc20Abi, fromToken.address);
-            const tokenBalance = await tokenContract.methods.balanceOf(account).call();
-            if (web3.utils.toBN(tokenBalance).lt(amountInWei)) {
-                status.innerText = "Insufficient token balance.";
-                jaceMessage.innerText = "Jace says: Not enough tokens to swap, fam!";
-                return;
-            }
             const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
             try {
-                const path = [fromToken.address, toToken.address];
+                const path = isFromOKB ? [wethAddress, toToken.address] : [fromToken.address, wethAddress];
                 const amounts = await router.methods.getAmountsOut(amountInWei, path).call();
                 const output = web3.utils.toBN(amounts[amounts.length - 1]);
                 if (output.eq(web3.utils.toBN('0'))) {
@@ -682,7 +710,7 @@
                     jaceMessage.innerText = getRandomMessage('calcFail');
                     return;
                 }
-                const pairAddress = await factory.methods.getPair(fromToken.address, toToken.address).call();
+                const pairAddress = await factory.methods.getPair(path[0], path[1]).call();
                 if (pairAddress === '0x0000000000000000000000000000000000000000') {
                     status.innerText = "Trading pair does not exist.";
                     jaceMessage.innerText = getRandomMessage('calcFail');
@@ -691,8 +719,8 @@
                 const pairContract = new web3.eth.Contract(pairAbi, pairAddress);
                 const reserves = await pairContract.methods.getReserves().call();
                 const token0 = await pairContract.methods.token0().call();
-                const reserveFrom = token0.toLowerCase() === fromToken.address.toLowerCase() ? reserves.reserve0 : reserves.reserve1;
-                const reserveTo = token0.toLowerCase() === fromToken.address.toLowerCase() ? reserves.reserve1 : reserves.reserve0;
+                const reserveFrom = token0.toLowerCase() === path[0].toLowerCase() ? reserves.reserve0 : reserves.reserve1;
+                const reserveTo = token0.toLowerCase() === path[0].toLowerCase() ? reserves.reserve1 : reserves.reserve0;
                 const reserveFromBN = web3.utils.toBN(reserveFrom);
                 const reserveToBN = web3.utils.toBN(reserveTo);
                 const priceImpact = amountInWei.mul(web3.utils.toBN(100)).div(reserveFromBN.add(amountInWei));
@@ -711,20 +739,20 @@
                 swapButton.disabled = true;
                 status.innerText = "Processing swap...";
                 jaceMessage.innerText = getRandomMessage('swapStart');
-                await approveToken(fromToken.address, amountInWei);
                 const gasPrice = await web3.eth.getGasPrice();
                 const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
-                const gasLimit = 300000; // Increased gas limit
-                if (fromToken.address.toLowerCase() === wethAddress.toLowerCase()) {
-                    await router.methods.swapExactTokensForTokens(
-                        amountInWei.toString(),
+                const gasLimit = 300000;
+                if (isFromOKB) {
+                    const totalValue = web3.utils.toBN(amountInWei).add(web3.utils.toBN(flatFee));
+                    await router.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(
                         amountOutMin.toString(),
                         path,
                         account,
                         deadline
-                    ).send({ from: account, gasPrice: adjustedGasPrice, gas: gasLimit, value: flatFee });
+                    ).send({ from: account, gasPrice: adjustedGasPrice, gas: gasLimit, value: totalValue });
                 } else {
-                    await router.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+                    await approveToken(fromToken.address, amountInWei);
+                    await router.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(
                         amountInWei.toString(),
                         amountOutMin.toString(),
                         path,
@@ -751,6 +779,9 @@
                 } else if (error.message.includes("out of gas")) {
                     errorMessage = "Swap failed: Out of gas. Try increasing gas limit.";
                     jaceMessage.innerText = "Jace says: Ran out of gas, boost the limit!";
+                } else if (error.message.includes("WOOF_LP: K")) {
+                    errorMessage = "Swap failed: Insufficient liquidity or invalid K invariant.";
+                    jaceMessage.innerText = getRandomMessage('insufficientLiquidity');
                 } else {
                     jaceMessage.innerText = getRandomMessage('swapFail');
                 }
