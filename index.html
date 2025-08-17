@@ -423,11 +423,11 @@
 
         async function switchToX - Layer() {
             const chainId = await web3.eth.getChainId();
-            if (Number(chainId) !== 109) {
+            if (Number(chainId) !== 196) {
                 try {
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: "0x6d" }]
+                        params: [{ chainId: "0xc4" }]
                     });
                 } catch (switchError) {
                     if (switchError.code === 4902) {
@@ -482,7 +482,7 @@
                 }
             });
             window.ethereum.on('chainChanged', async (chainId) => {
-                if (parseInt(chainId, 16) !== 109) {
+                if (parseInt(chainId, 16) !== 196) {
                     web3 = null;
                     account = null;
                     router = null;
