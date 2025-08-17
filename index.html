@@ -210,7 +210,7 @@
             <ul>
                 <li><strong>Connect Your Wallet</strong>: Use MetaMask to connect to X Layer (chain ID: 196). Ensure you have enough <span class="highlight">OKB</span> for gas fees.</li>
                 <li><strong>Select Transfer Type</strong>: Choose <span class="highlight">OKB</span> for mainnet coin or <span class="highlight">Token</span> for ERC20 tokens.</li>
-                <li><strong>Enter Token Address</strong>: If transferring tokens, input a valid ERC20 token contract address.</li>
+                <li><strong>Enter Token Address</strong>: Input a valid ERC20 token contract address on X Layer.</li>
                 <li><strong>Input Addresses & Amounts</strong>: Enter one address and amount per line (e.g., <span class="highlight">0x...address,10000</span>). Supports up to 200 addresses.</li>
                 <li><strong>Send Batch</strong>: Approve tokens if needed, then execute the transfer.</li>
             </ul>
@@ -276,7 +276,7 @@
                 document.getElementById('walletAddress').textContent = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 multisendContract = new web3.eth.Contract(multisendABI, multisendAddress);
                 status.textContent = "Connected to X Layer";
-                sendButton.disabled = false; // Enable button on successful connection
+                sendButton.disabled = false;
                 console.log("Wallet connected at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
             } catch (error) {
                 console.error("Connect error:", error);
@@ -313,23 +313,34 @@
 
             if (transferType === 'Token') {
                 const tokenAddress = document.getElementById('tokenAddress').value.trim();
+                console.log("Validating token address:", tokenAddress);
                 if (!web3.utils.isAddress(tokenAddress)) {
-                    status.textContent = "Error: Invalid token address";
+                    status.textContent = "Error: Invalid address format (e.g., missing '0x' or wrong length)";
+                    console.log("Address format invalid");
                     return null;
                 }
                 if (web3 && accounts) {
                     try {
-                        const code = await web3.eth.getCode(tokenAddress);
+                        const code = await web3.eth.getCode(tokenAddress).catch(err => {
+                            console.error("getCode failed:", err);
+                            return '0x'; // Fallback to treat as non-contract
+                        });
                         if (code === '0x') {
                             status.textContent = "Error: Token address is not a contract";
+                            console.log("Not a contract");
                             return null;
                         }
                         const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-                        decimals = await tokenContract.methods.decimals().call().catch(() => 18);
+                        decimals = await tokenContract.methods.decimals().call().catch(err => {
+                            console.error("decimals call failed:", err);
+                            return 18; // Fallback to 18 decimals
+                        });
                         symbol = 'Token';
                         logo = `https://ui-avatars.com/api/?name=T&background=00BFA5&color=121212&size=18`;
+                        console.log("Token validated, decimals:", decimals);
                     } catch (error) {
                         status.textContent = `Error: Failed to validate token: ${error.message}`;
+                        console.log("Validation error:", error);
                         return null;
                     }
                 }
@@ -458,7 +469,6 @@
             }
         }
 
-        // Ensure event listeners are attached after DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             const connectButton = document.getElementById('connectButton');
             const sendButton = document.getElementById('sendBatch');
@@ -471,7 +481,7 @@
             }
             document.getElementById('transferList').addEventListener('input', parseTransferList);
             document.getElementById('tokenAddress').addEventListener('input', parseTransferList);
-            document.getElementById('sendBatch').disabled = true; // Ensure initial state
+            document.getElementById('sendBatch').disabled = true;
         });
 
         window.addEventListener('load', () => {
