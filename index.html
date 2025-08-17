@@ -69,7 +69,7 @@
             <table class="token-table">
                 <thead>
                     <tr>
-                        <th>Coin</th>
+                        <th>Token</th>
                         <th>Address</th>
                         <th>Amount</th>
                     </tr>
@@ -96,8 +96,8 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         let web3, accounts, multisendContract;
+
         const multisendAddress = "0xa0efAC6b1096a4D2C40BFb2a32dC2AF71a45A9F8";
-        const OKB_LOGO = "https://static.oklink.com/cdn/assets/imgs/243/230501A8E74482AB.png";
 
         const multisendABI = [
             { "inputs": [{"internalType":"address","name":"_token","type":"address"},{"internalType":"address[]","name":"_targets","type":"address[]"},{"internalType":"uint[]","name":"_amounts","type":"uint[]"}],"name":"multisendToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
@@ -109,7 +109,8 @@
         const tokenABI = [
             { "inputs": [{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
             { "inputs": [{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            { "inputs": [],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"}
+            { "inputs": [],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+            { "inputs": [],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
         ];
 
         const xLayer = { chainId: 196, name: 'X Layer mainnet', rpcUrl: 'https://rpc.xlayer.tech' };
@@ -173,6 +174,25 @@
                 return null;
             }
 
+            let decimals = 18; // Default, will be updated if token is valid
+            let symbol = "Token"; // Default, will be updated if token is valid
+
+            if (document.getElementById('transferType').value === 'Token') {
+                const tokenAddress = document.getElementById('tokenAddress').value.trim();
+                if (web3 && web3.utils.isAddress(tokenAddress)) {
+                    try {
+                        const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+                        decimals = await tokenContract.methods.decimals().call();
+                        symbol = await tokenContract.methods.symbol().call();
+                        console.log("Token validated, decimals:", decimals, "symbol:", symbol);
+                    } catch (error) {
+                        status.textContent = `Error: Failed to validate token: ${error.message}`;
+                        console.log("Validation error:", error);
+                        return null;
+                    }
+                }
+            }
+
             for (const line of lines) {
                 const [address, amountStr] = line.split(',').map(item => item.trim());
                 console.log("Parsing line:", line, "->", { address, amountStr });
@@ -185,13 +205,14 @@
                     status.textContent = `Error: Invalid amount in line: ${line}`;
                     return null;
                 }
-                transfers.push({ address, amount: web3.utils.toWei(amountStr, 'ether') });
+                const amountWei = web3.utils.toWei(amountStr, decimals);
+                transfers.push({ address, amount: amountWei });
                 const row = document.createElement('tr');
-                row.innerHTML = `<td><img src="${OKB_LOGO}" class="token-img">Token</td><td>${address.slice(0, 6)}...${address.slice(-4)}</td><td>${amount}</td>`;
+                row.innerHTML = `<td>${symbol}</td><td>${address.slice(0, 6)}...${address.slice(-4)}</td><td>${amount}</td>`;
                 previewBody.appendChild(row);
             }
-            status.textContent = transfers.length > 0 ? `Ready to send to ${transfers.length} addresses` : 'Enter valid transfers';
-            return { transfers };
+            status.textContent = transfers.length > 0 ? `Ready to send ${transfers.length} ${symbol} transactions` : 'Enter valid transfers';
+            return { transfers, decimals, symbol };
         }
 
         async function approveToken() {
@@ -204,12 +225,13 @@
             try {
                 const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
                 status.textContent = "Approving token...";
-                await tokenContract.methods.approve(multisendAddress, web3.utils.toWei('1000000000', 'ether')).send({ from: accounts[0] });
+                const maxAllowance = web3.utils.toWei('1000000000', 'ether'); // Large number for max allowance
+                await tokenContract.methods.approve(multisendAddress, maxAllowance).send({ from: accounts[0] });
                 status.textContent = "Token approved successfully!";
                 console.log("Token approved at", new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
             } catch (error) {
                 console.error("Approve error:", error);
-                status.textContent = `Error: ${error.message}`;
+                status.textContent = `Error: ${error.message}. Ensure you have enough token balance and OKB for gas.`;
             }
         }
 
@@ -227,11 +249,11 @@
 
             const parsed = await parseTransferList();
             if (!parsed) {
-                status.textContent = status.textContent || "Error: Please fix the input.";
+                status.textContent = status.textContent || "Error: Please fix the input or validate the token address.";
                 sendButton.disabled = false;
                 return;
             }
-            const { transfers } = parsed;
+            const { transfers, decimals, symbol } = parsed;
 
             try {
                 section.classList.add('loading');
@@ -245,14 +267,14 @@
                     const tokenAddress = document.getElementById('tokenAddress').value.trim();
                     await multisendContract.methods.multisendToken(tokenAddress, targets, amounts).send({ from: accounts[0] });
                 } else {
-                    await multisendContract.methods.multisendEth(targets, amounts).send({ from: accounts[0], value: web3.utils.toWei('0.01', 'ether') }); // Placeholder value
+                    await multisendContract.methods.multisendEth(targets, amounts).send({ from: accounts[0], value: web3.utils.toWei('0.01', 'ether') }); // Placeholder for OKB
                 }
-                status.textContent = "Batch transfer successful!";
+                status.textContent = `Batch transfer of ${symbol} successful!`;
                 document.getElementById('transferList').value = '';
                 document.getElementById('transferPreview').innerHTML = '';
             } catch (error) {
                 console.error("Send error:", error);
-                status.textContent = `Error: ${error.message}. Check console for details.`;
+                status.textContent = `Error: ${error.message}. Check console, token balance, or allowance.`;
                 sendButton.disabled = false;
             } finally {
                 section.classList.remove('loading');
@@ -264,7 +286,6 @@
             const connectButton = document.getElementById('connectButton');
             const sendButton = document.getElementById('sendBatch');
             const approveButton = document.getElementById('approveToken');
-            const validateButton = document.getElementById('validateToken');
             if (connectButton && sendButton && approveButton) {
                 connectButton.addEventListener('click', connectWallet);
                 sendButton.addEventListener('click', sendBatchTransfer);
