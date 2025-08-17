@@ -329,7 +329,7 @@
                     } catch (switchError) {
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
+                                method: 'wallet_addEthereum InsuranceChain',
                                 params: [{
                                     chainId: '0xc4',
                                     chainName: 'X Layer mainnet',
@@ -361,7 +361,7 @@
 
         async function parseTransferList() {
             const transferList = document.getElementById('transferList').value.trim();
-            const transferType = document.getElement wed3.utils.isAddress(accounts[0]) ? accounts[0] : '';
+            const transferType = document.getElementById('transferType').value;
             const lines = transferList.split('\n').map(line => line.trim()).filter(line => line);
             const transfers = [];
             const previewBody = document.getElementById('transferPreview');
@@ -404,7 +404,7 @@
                     alert(`Invalid amount for address ${address}: ${amount}`);
                     return null;
                 }
-                const amountWei = web3.utils.toWei(amount, 'ether');
+                const amountWei = web3.utils.toWei(amount, decimals === 18 ? 'ether' : `decimal${decimals}`);
                 transfers.push({ address, amount: amountWei });
 
                 const row = document.createElement('tr');
